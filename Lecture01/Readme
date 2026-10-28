@@ -1,0 +1,27 @@
+### Introduction to HLD 
+System design is divided into two parts :- 
+1. HLD (High Level Design) 
+2. LLD (Low Level Design)
+
+#### 1. HLD (High Level Design) :- 
+HLD focuses on designing arichitecture  of any application. Lets understand the general meaning of an architecture so taking the example of home building what we need to develop this house like Cement, Bricks, Floor internal architecture(rooms,kitchen). Rather than developing the house directly we understand the reqirements or ingridiant we need to develop the house. 
+- Building an application where application may be any thing like website, mobile app, etc Before developing the any application we ask some question related to the application like :  
+1. Teck stack we need? (MERN, Spring Boot, Jhango,etc on the basis of different languages) , -> So we need to identify and give the reason to use your stack to build your application. 
+ - The stack must give some some benefits :- 
+   - If the application is based on multi-threaded environment -> Means multiple users  using the critical resource at same time like On BookMyShow multiple users try to block the same seat. -> For this type of application we avoid the python based application as it is not good multi-thread environment. 
+2. Cost Optimization :- Cost of deployment of your application per month, Is we able to make money we spend on the deployment of the application? 
+3. Database we use in the application? (sql, nosql, graphSQL, etc) 
+4. Handling the users of application from thousands to millions. So whenever the sells on the amazon, flipkart we be launch then multiple users comes to the application, etc
+ - Estimation of the uses on application will be done called Back of the envelope esitmate. In this we understand that on backend we are creating application How many users we are able to handle. 
+ - Real world Ex :-  If 10 floor ka bulilding bana rahe hai then ham ye estimate karenge ki base kitna majbbot hona chahiye. So if pata hai ki ham 2 floor ka ghar hai then us type ka base rakhenge. 
+ - If having the estimate of 2 lakhs users and user now coming is 10 lakhs then in this case we may have to the migration of the database, stack, etc like 2 floor ke ghar ko agar 5 manjila banana ho toh ,  base majbbot nahi hai then pure floor ko thode phir se banao naya or we migrate some other place and create 5 floor. 
+ - Servers ko scale karna is easy task, but scaling in the stack and databases are complex task. 
+
+#### LLD(Low level Design) :- 
+Focus the actual coding part. In this we take care of the How OOPs priciple is being folloewed, Which design principle we use , which design pattern we use, etc
+- Code in the application should be :- 
+  - Clear Code
+  - Loosely coupled code -> simple to add new feature, etc
+
+#### HLD --> Architectire (application) :- 
+

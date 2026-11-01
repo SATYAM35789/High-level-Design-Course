@@ -95,3 +95,18 @@ N/w Communication are the rules that both the client and server follow to commun
     - Communicating like open new web page, etc
    - HTTPs (Hyper-Text Transfer Protocol secure) : So it is the secured version of the HTTP, So whenever we clicking any line where the authentication of the user, try to user the critical resource then in this cases we are calling the HTTPs. 
 
+   - FTP (File Transfer Protocol):- When we want to transfer a file(document) using internet then we use FTP. So when client want to transfer the document to the server (viceversa) then on that request we would be using this protocol. 
+   - SFTP (Secure File Transfer Protocol) :- It is secure, and if you want to go in details have a two ways to communicate, etc
+  
+   - SMTP(Simple Mail Transfer Protocol):- When we want to tansfer any mail over the internet we use the SMTP and when we want to recive the mail over the internet then POP3 / IMAP is used. 
+
+   - WebRTC :- 
+     - In the client-server Architecture, we used to send request and receive the response over the internet using the HTTP. So till now we were doing the One-Way communication like client sends req and server back's res. So what if client can also sends the response to server. for this type of application we use the WebRTC. 
+     - Like ChatApplication whatsApp,Telegram, etc
+       - So lets we have to client, so if client1 wants to sends the m1 message to client2 then technically what happend is client1 send the message  to server using http protocol and so we got the message m1 at the server So now server wants to communicate to client to sends the message, So server cannot sends the message to client using HTTP.
+      - Beacuse HTTP protocol says that only client can able to intiate the communication and server will never able to initate the communication. So while transfering the message from server to client we cannot use the http protocol. For in this case we use the WebRTC Protocol. 
+
+   - WebSockets :- 
+     - So till now we were talking about the client-server Architecture. So we have the peer-to-peer interaction/communication will be also done. Peer to Peer Communication means communication done b/w two client without the involvement of the server. 
+     - So two clinets wants to communicate with each other directly then in this case we use the WebSocket. 
+

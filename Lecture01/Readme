@@ -24,4 +24,74 @@ Focus the actual coding part. In this we take care of the How OOPs priciple is b
   - Loosely coupled code -> simple to add new feature, etc
 
 #### HLD --> Architectire (application) :- 
+- Whenever we talk about any softaware/ application -> which may be website, Mobile Application , windows based application,etc so it is generic term. So whenever we talk about the High Level Desion we mainly focus on the website and mobile application because software like photoshop which exist in our computer in offline mode, if photoshop wants to add new feature as a bug fix karne ke bahne software download karne ko bolega. 
+-In this cases users are having the choice to integrate the new feature or not. So in software as a developer we cannot integrate quickly. So when use software which take the our harddisk space and ram and more access on our computer -> here we are not have the server and we are not using internet calls so we cannot talk much about the harddisk in this case. 
+- So designing the software we are most focused on the LLD part rather than focusing on HLD. 
+- So when we have calls using the internet like http calls, etc then we focused on the HLD. Because here we have the server and need to scale this server. 
+
+#### Client-server / request-response  model
+- When we are having the application in Internet like Website. On the basic level we have two things :- 
+1. Client 
+2. Server 
+
+- Client :- When we try to start or try to access any website then  we go to web browser as a client when we type www.xyz.com or hit the URL what happend to the backend. 
+ - Ip address fetching
+ - our request hit to the server (server is like a computer(powerful)) 
+
+- We know that to run any application we need Ram, CPU, harddisk space, etc are required. In last example of the photoshop we are using our own harddisk, cpu , ram to run that and when we run a website like youtube we are only able to show the video only able to brawse the video, where it is loaded, where it is processe,etc Where this all happen, that will be called the servers(it serves our request).
+
+- When client request(http/https) it get processed on the server , after the processed the output/response is given back to the client. -> called the request-response or client-server model etc. 
+
+- client may be :- browser / mobile application.
+- so when we want run the youtube using the mobile app then that mobile app will also work as an client, basically client may be the any frontend through which we are able to do the any http request on server , where it processed and we have getting the response back called request/ respose cycle. 
+
+- Lets say we have the 1000 of users, then they come to the browser then they do the http request they go to the our server(ek he server hai). 
+ - We know that server is a computer which process our request at the backend. These server may have their limitations like say it have the RAM: 32 GB , and we are having the 1000 of user comes to our server and this RAM is used up then How we are going to manage the upcoming any user? 
+ - Then system will be crashed in that case. To minimize this or to dissolve this case, HLD is based on the procedure called the distributed sysytem. 
+ - So computer ke accessories kabhi n kabhi to maximize to ho jayegi, kyuki hamare users bad rahe hai to ham kab tak apne computer ko upgrade karte jayenge. 
+ - Hamko kabhi n akbhi toh servers ko aapas mai jodlar ek sath use karna hoga , so is purre process ko jisme ham apne servers ko apas mai jodkar use karte hai n us sysytem ko ham distributed system kahte hai. 
+ 
+ #### Horizontal Scaling vs Vertical Scaling :- 
+ - So in the privious example when we reached the maximum RAM  we increing the RAM in 32, 64, 128, 264, etc order mai. (Vertical scaling) 
+ - We can also add the servers like server1, server2 ,etc apas mai milkar clients ke request ko handle karnege. (Horizontal)
+  - Jisme apne servers ke RAM , harddisk(space) ko badaye ja rahe hai, CPU ko , OS ko better karte ja rahe hai is tarah ke scaling ko vertical scaling kahte hai. We can Imagine that ek he server ko ram, etc accssories ko badaye ja rahe hai. 
+  - vertical scaling is good where we have the fixed or less no user interaction is done. 
+  - If want to our applications to be used by the millions of users then we do not do the vertical scaling. 
+  Hoeizontal scaling :-  Hamko jab bhi uses limit ke bhar ja raha hai(having maximum users) ham ek naya server appoint kar lete hai. 
+  - So ye server apas mai jude kaise honge, jab koi client request marega toh wo server1/server2/server3 par ja sakta hai(on each request) , on the request any server can accept that request , so data toh different servers mai processed hoga then ye request synch kaise hoga? aur server apas mai data interaction kaise kar pa raha hai? 
+
+ - So the horizontal and vertical scaling concept is base for understanding the distributed system. 
+
+#### Distributed System :- 
+- So these different servers which we are scaling is called the nodes in distributed sysytem. And we represent in the form of circle. 
+- The main features of the distributed sysytem is that we are able to scale for the millions of users like if we reached the maximum no of users then we introduce the new server in the system. 
+ - Limitations of distributed system is that it complicate the structure of our website. So how the different nodes in the DS will be able to communicate with each other, To communicate with another nodes they must do calls like http calls. 
+ - Why node need to communicate with each other in the DS? For maintaing the data intigrity. 
+ - So basically for now we need to understand for now is that Due to the DS our website structure becomes complicated. Whereas it is solving a big problem that for now we can able to manage application for the millions of users. 
+ -DS brings problems like how node  interact internally, how they are scale-up and scale-down autonatically, and how they are sharing their data, etc
+
+#### NetWork Communication :- 
+- When we doing the reqest to the server and  return the response, then the client and server are interacting with each other. 
+ - We heave discussed the photoshop example So We know that photoshop will be running locally in our computer, we know through LLD that when this will be running different classes will be exist there. 
+  - This classes need to interact, classes will be interact as in one class another class method would be called. Means they are communication in OPPs. And calling method is very simple and We know how to call method. 
+- So here when we are talking about the nodes or the client-server architecture, client is not calling any method of server,  client is calling over the internet to server, server is sending the response over the internet. So client and server are communicating with each-other? There must be some rules and regulations. 
+- So there must be some language through which they are able to talk to each other, So the rule and regulation for this is known as the Network Communication. 
+
+N/w Communication are the rules that both the client and server follow to communicate. In n/w communication we have :- 
+1. N/W protocols : So here will be learning the protocols and their usecase, and for which application we need which protocols, and how we shift the protocols,etc
+
+ - Any application we are having is based on the iso_OSI model which have the 7 layers :- 
+   - Application -> Presentation -> Session -> Transport -> Network -> Data-Link -> Physical Layer
+   - This layers are responsible for how the client and server are communicating over the network (Internet)
+   - So each layer of this model have their own protocol but here we are discussing about the Application layer and Transport layer which are playing he rolw in the HLD. 
+
+   - Applicattion layer protocol :- HTTP, HTTPs, FTP, SMTP, WebRTC, SFTP, Web-Sockets 
+   - Transport layer Protocols :- TCP and UDP
+
+   #### Applicattion layer protocol :- 
+   - Definition:- When our application is actually calling through the Internt to server. Means When client calls through the internet then this call will be following which rules? They are http/htttps rules. 
+   - HTTP (Hyper-Text Transfer Protocol):- If we want to go in detail of this protocol we can browse the it is connection oriented or not , how it sending the packets,etc
+    - So important to understand in HLD is that whenever a client is communicating with server it sends the http call to the server. 
+    - Communicating like open new web page, etc
+   - HTTPs (Hyper-Text Transfer Protocol secure) : So it is the secured version of the HTTP, So whenever we clicking any line where the authentication of the user, try to user the critical resource then in this cases we are calling the HTTPs. 
 

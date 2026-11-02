@@ -110,3 +110,47 @@ N/w Communication are the rules that both the client and server follow to commun
      - So till now we were talking about the client-server Architecture. So we have the peer-to-peer interaction/communication will be also done. Peer to Peer Communication means communication done b/w two client without the involvement of the server. 
      - So two clinets wants to communicate with each other directly then in this case we use the WebSocket. 
 
+   #### Transport layer Protocol :- 
+   - TCP(Transmission Control Protocol) :- So when you want to communicate with client to server and you want a reliable communication -> means when you send the message from the client to server and you want that message should be transferred/ delivered with 100%. 
+    - In that case we will be using the TCP Protocol, -> It breaksown the m1 message into collection of packets like p1, p2, p3 So client sends the packets in one by one (in order) server send's the acknowledgement of the packets. 
+    - If not ack recived at clients side it means that packets have not been reached to at server side. 
+    - Due to this this ways of communication is slow.  
+   
+   - UDP(User DataGram Protocol) :- 
+     - It is not reliable so it is fast, so here the packets are send by the client and one by one without receiving the any ack at client side. 
+     - Video straming(live) type of case is done using the UDP protocol, lag issues -> saare packets nahi pahuche at server side but jo be packets hai uska hamne sense bana liya. 
+
+  #### Conclusion :- 
+  - Client :- Web-Browser , Mobile Application
+  - Horizontal and Vertical Scaling :- In the horizontal scaling we may have the different numbers of server but in the vertical server we have Only One server and we upgrade the server on requirement based But at some time we cannot increse the efficiency-> we have to stop. 
+  - Calling :- 
+    - Http/Https  call :- Only client can initiate the http calls when client need to load web-pages.
+    - FTP/SFTP call :- When  client want to transfer any file over internet we need this call. 
+    - SMTP :- When need to transfer mails 
+    - And we are having the different calls realted to different cases. 
+
+  ### DNS (Domain Name System) :- 
+  - When clinet wants to communicate with the server it cannot talk directly we have the DNS in between. 
+   - Client Firstly talk with the DNS and DNS returns the IP address of the server
+
+  - Why client directly unable to communicate with server? Why need the IP address? 
+    - Client : Web Browser
+    - Server : Youtube (want to interact)
+
+    - So we want to communicate with youtube so we write on our web-brawser as https://www.youtube.com So this url is in the human understandable format, so How internet will bw knowing that ye url kiska hai. 
+    - We know that available devices over the internet have to unically Identified as mobile I am using for study shold have some identification over Internet. So this identfication is as the IP address. 
+    - IP : 12.34.244.122 -> let say this the IP of the Youtube so to access Youtube we must have this IP. 
+    - So human is not comfortable for learning the IP address of the sites as IP address. So we need the mapping . 
+    - ex :-  
+         https://www.youtube.com      12.34.244.122
+         https://www.instagram.com    12.34.244.124
+
+      - we want  that on typing this  https://www.youtube.com we reached to node (12.34.244.122). 
+      - So DNS is responsible for  storing this type of mapping. So DNS ek server hai jo mapping karta hai url ko ip address se.
+      - DNS have the mapping table which have only two section URL and IP address
+
+      - On hitting the URL we go to the DNS server and then from there we got the IP address of the particular url. So clinet send the URL to the DNS server and server go the table and fetch the IP address that URL and return to the client. 
+      - And then client will be request to the server. 
+      - We will be leaning it in detail when we will be Doing the HLD project and there in  DNS architecture we will be learning. 
+      
+         

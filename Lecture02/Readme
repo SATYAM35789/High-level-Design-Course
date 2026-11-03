@@ -29,7 +29,7 @@ If using this architecture and we built some application like instagram,etc Then
   - 1. Here we are having only one server, so it is possible that there must be Database in that server. As we know from the definition of the server that it is speclized computer which is deploy on Internet which handle the server calls.
    - To scale up the application we need to put our database to the another server. 
 
-#### Introduced DB layer in  Simple Client-Server Architecture :-  
+### Introduced DB layer in  Simple Client-Server Architecture :-  
 Structure :- 
  - Client tier :- Client1 : WebBrowser Client2: MobileApp 
  - Web-Server tier : Web-Server
@@ -72,6 +72,88 @@ Now How the calling will be happened :-
       If yes then we can RD. 
       - If Not stuctured :- Then we go for the NRD.
 
-    - Criteria 2 :-  
+    - Criteria 2 :- Response Time
+      - If having an application where need fast response, for those we prefer the NRD. Because in NRD we are having low latency. We will be seeing this in details further, 
+
+  #### Muliple Server :- 
+  - As this architecture is optimized then before and capable to manage the user upto 30k because after sometime Our webserver is resources reached to maximum. 
+   - If many user sends the request at same time then our server ram gets used and reached to its maximum then we need to do the scaling of the server(vertical or horizontal).  
+    - Vertical scaling : Specification of server ko increase karna 
+      limitation : 
+       1. Isko kuchh samay tak he bada sakte hai, kuchh samay baad hamko rukna hoga
+       2. So yaha ek he server hai, so if it fails our application stop working also called SPOF(Single Point OF Failure)
+    - Horizontal Scaling :- Attaching new server
+  
+  - Modified Structure after horizontal scaling :- 
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - Web-Server tier : Web-Server1 , Web-Server2
+    - DB(Database) tier : DB-Server
+
+    
+  - Now user can request any of the server, some request is handled by WebServer1 and some by webServer2. -> By doing so we decrese the load from the server. 
+  
+  - How we will be decide that In which server we have to send the request and who will be deciding this ? Means pahle jab client se request karte tab DNS hamko IP address lakar deta tha WebServer1 ka lakin ab kis Webserver ka IP la kar dega? Jiska ka bhi IP lakar dega then us case mai saari request toh waha chali jayegi
+   - Load Balancer :- 
+     - Load balancer is responsible for deciding that on which server we have to send the request. 
+     - So ab client LB par request hit karega, aur LB decide karega ki usko request kaha bhejna hai, webServer1 par ki webServer2 par. 
+     - So its been  tracking the servers and if any server have the load then it sends the current request to next/another server attached. 
+     - We will be learning it in detail when we learning the LB architecture -> algo used etc 
+    
+  #### Load Balancer also introduced  :- 
+  - Modified Structure after horizontal scaling :- 
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - Load Balancer 
+    - Web-Server tier : Web-Server1 , Web-Server2
+    - DB(Database) tier : DB-Server
+
+  Now How the calling will be happened :- 
+    1. Client to DNS (req)
+    2. DNS to Client (res) : returns the IP of load-balancer
+    3. Client to Load-balancer (req) : 
+    4. Load-balancer to WebServer (req -> using private IP)
+    4. web-server to Datbase (req)
+    5. Database to Web-server (res)
+    6. Web-server to Client (res)
+
+    - Private beacuse we donot want anyother one to interact with our server. We want that if any want interact with our server then it must come through the Load-balancer. 
+     - So LB ke pass public IP hai, anyone can call our LB. 
+
+    - Ab ham server ko asaani se bada sakte hai if needed in future. 
+
+    limitation with our database of current structure :-
+    - We are having the single DB if its gets failed then what we will be doing (SPOF), then our application will unable to work or stop working. OR We lost our users data. 
+    -> Introduced the database Scaling 
+
+    #### DB Scaling :- 
+    -  Modified Structure :- 
+      - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+      - Load Balancer 
+      - Web-Server tier : Web-Server1 , Web-Server2
+      - DB(Database) tier : DB-Server 
+    
+      ##### Master Slave Architecture (Data backup) :- 
+      - Responsible to communicate with server to database(multiple)  
+      - What is Master-slave architecture and how is it helping in the data-replication? 
+        - Master DB 
+        - Slave DB :- slaveDb1, slaveDb2, slaveDb3
+
+        Database Qurry means it can be read or write only two type of qurry will be there. Read qurry includes only select and write qurry includes insert, delete, update, etc. 
+        - Write qurry will be perform on the Master DB and Read qurry will be perform on any of the slave. 
+
+        How this architecture will work? 
+        Master DB function:- The data available on the master DB will be replicate time to time on the Slaves Db we have available. 
+        When it will replicate data? 
+         1. Whenever the write operation perform on the master Db. 
+         2. Time to Time replication, write operation aane ke baad turant replicate n kare, thoda ruke kuchh aur agar write operation hai toh unko bhi le le aur data replicate karle. 
+
+        Slaves :-
+        - responsible for performing the read qurry, means when demand for fetching some data from Db that will be performed here. 
+        - So we may have the more than one slave then for that condition we need to intoduced Load-Balancer(LB). -> for deciding which slave to execute for qurry. 
+      
+      - We have been doing this for the data-replication, if any of DB gets currpted/crash then in that case we can recover our data from other slaves. 
+      - What happend if master DB get crashed as we having only one masterDb. or When MasterDb get's the write operation before being updated in the slaves it get's crashed then what to do? (called STALE Data).
+       - Then kisi ek mai se ham master bana denge. Which slave will become the next master slave for that we have different algorithum such as Voting Algorithum. 
+       - We will be make the masterDb for  temporary period of time, till our Master DB will be Up again. or Deploy new master. We do this because slave DB is not that powerful and MasterDb has more functionalities.
+
 
 

@@ -1,0 +1,77 @@
+Note :- Anything that we  will do in HLD is to make our application scale better. 
+
+-We will be creating a project, and understand what components we need to scale our application to millions of users. 
+
+### 1. Simple Client-Server Architecture :-
+Structure :- 
+ - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+ - Web-Server tier : Web-Server
+
+ - And we know from our last lecture that client never sends the request direct to the server it sends through the DNS. 
+ - So firstly client request to DNS server and then DNS response the IP address. 
+   - DNS server has Mapping table include the URL and IP section. 
+   - After receiving the response from the DNS, client then make http request to the web-server.
+   - Then WebServer will return response after processing. 
+   - Response may be html page which user want to render, JSON, etc
+
+UnderStanding that what actually the http request intake :- 
+While api calling we have the different http headers, and the header have their body. 
+  1. Different types of http calls are :- Post, Get, Put,etc
+  2. url : www.example.com
+  3. Headers :- 
+    1. Request-JSON
+    2. Client credential's
+  4. Body : json format
+
+- So we send these details while http request to the server. After this server process the request. What would be that processing? Processing may be fetching some details, to store the data, do some computation. 
+
+If using this architecture and we built some application like instagram,etc Then it will be not able to handle the much of users because :- 
+  - 1. Here we are having only one server, so it is possible that there must be Database in that server. As we know from the definition of the server that it is speclized computer which is deploy on Internet which handle the server calls.
+   - To scale up the application we need to put our database to the another server. 
+
+#### Introduced DB layer in  Simple Client-Server Architecture :-  
+Structure :- 
+ - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+ - Web-Server tier : Web-Server
+ - DB(Database) tier : DB-Server
+
+Now How the calling will be happened :- 
+ 1. Client to DNS (req)
+ 2. DNS to Client (res)
+ 3. Client to Web-Server (req)
+ 4. web-server to Datbase (req->processing needed to Webserver)
+ 5. Database to Web-server (res)
+ 6. Web-server to Client (res)
+
+ Note :- Database apne processing mai kya karega may be write , kuchh details fetch karega,etc
+
+ So using this architecture we can able to handle the more user as if wants to scale-up the web-server we simple add new web server and if want to sacle the database then we can simply add new database. 
+
+ ##### Which Db to Use? 
+ We mainly divide the database into two parts as : 
+ 1. Relational Database 
+   - This type of db are sql based means we can apply qurry over the data. 
+   - Different DB : MySql, PostGreSql, OracleSql, etc
+   - We have row-col and we have different qerry on the rwo-col or table.
+
+   - So why NRD comes as we know that every data cannot be structured. Like if we want to store the JSON format to the RD then it would be having the differnt complication.  
+ 2. Non Relational Database 
+   - We divide the NDR into four parts :-
+   1. Key-Value Store :- 
+    - Just like we use the map in python  it is similar to that. We can store the data in different format as string to string, string to integer, string to double, etc
+    - Ex Amazon Dynamo DB
+   2. Column Based Store :- Ex Casandra DB 
+   3. Document Based Store : MongoDb 
+   4. Graph store :- GraphQl
+     - like following and follors based dierected and Undirected Graph, for storing this type of graph we need the graph store DB. 
+
+    What are the factor on which we decide which type of DB we need to choose b/w the RD and NRD? 
+    - Criteria 1 :- 
+      1. Is our data is structered data
+      2. Is we need qurry on our stored data
+      If yes then we can RD. 
+      - If Not stuctured :- Then we go for the NRD.
+
+    - Criteria 2 :-  
+
+

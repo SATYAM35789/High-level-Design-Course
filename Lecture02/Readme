@@ -155,5 +155,79 @@ Now How the calling will be happened :-
        - Then kisi ek mai se ham master bana denge. Which slave will become the next master slave for that we have different algorithum such as Voting Algorithum. 
        - We will be make the masterDb for  temporary period of time, till our Master DB will be Up again. or Deploy new master. We do this because slave DB is not that powerful and MasterDb has more functionalities.
 
+      - This way replicate the data to protect from the data loss. 
 
+  ### Added Master-Slave  
+  Structure 
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - Load Balancer 
+    - Web-Server tier : Web-Server1 , Web-Server2
+    - DB(Database) tier : Master-Slave (db scaling)
+
+Note :- Removed the SPOF (Single Point Of Failure) from our simple Architecture. 
+
+- Think and Answer :- 
+    We are having the more limitation left to scale our architecture to millions of users. We have the client side rendering languages like html/css/js and Server side rendering languages java,python, etc So we are JS language for the all the logic implementation, so " why we need the server layer? Why client is not communicate with dataBase directly?"
+     - Database got exposed, and anyone can access the database and change credential of our database. 
+     - Cannot have the authentication 
+
+  ### Introduced Cache 
+  - Cache is faster then database, so opertaion like read and write will be done faster on the database. 
+  - Cache basically reduce the qurry related to database. 
+  
+  Logically placement of cache:-
+   Components :- 
+    - WebServer
+    - Cache
+    - Database 
+
+  - It  is placed between the Webserver and Database, it means when webServer want to make a request , request first go to the cache if the data related to req  found then it sends the respose directly to the WebServer.
+   - So if we try to hit the database again and again it will consume time. 
+  - If cache has not the data then cache will request to db and then db response back, this is called the Cache Miss. 
+  - Cash Hit :-  Found the data on the cache.
+
+  - Cache also includes the different algorithum like Cache Eviction Algorithum, this algo says that if cache got full then which data will be released to put new data, see in detail in cache architecture. 
+
+  New Structure of Architecture :-  
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - Load Balancer 
+    - Web-Server tier : Web-Server1 , Web-Server2
+    - Cache tier : cache (Directly attached with Webserver)
+    - DB(Database) tier : Master-Slave (db scaling) -> (Directly attached with Webserver)
+
+  - Now we improve the Latency -> If user wants data then user ka data fast de payenge.
+
+  ### Intoduced CDN(Content Delivery Network)
+  - If the application has more static content like html, css, js, images,etc hamko pata ye dynamic bhi ho sakta but if hamko same contents ko show karna hai then We try to avoid the server hit again and again in this case. It slow down process as we call server then server req the cache or DB for the data to load. 
+   -> To avoid this we Introduced CDN.
+  - CDN is third party vendor, means isko ham khid nahi banate isko integrate karte just like we integrated the DNS. 
+  - It is like a proxy means client ko lagta hai ki wo ek server se baat karta hai, actually wo baat karta hai CDN se and client will be thinking that it gets the response from the server. 
+   - So CDN act like a server but actually it is not a server.
+
+  - We have different CDN available :- 
+    - Amazon : CloudFront
+    - Akamai
+
+    so agar hamko contents ko load karwana hai apne application par then ham directly clients se CDN ko call karte hai, aur wo as response hamko Data de deta hai. 
+    
+    CDN efficency :- 
+    - Graphical location of CDN matters
+
+  New Structure of Architecture :-  
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - CDN : (Directly attached with Client)
+    - Load Balancer 
+    - Web-Server tier : Web-Server1 , Web-Server2
+    - Cache tier : cache (Directly attached with Webserver)
+    - DB(Database) tier : Master-Slave (db scaling) -> (Directly attached with Webserver)
+  
+  How CDN load the data fastly? 
+  - When integrate the cdn to our application then we have to make change in the DNS. The mapping table of DNS will updating the URL and Ip address of the CDN. 
+  - Calls we need to make to load the data on application :- 
+     1. Client to CDN(req)
+     2. CDN to Client (res)
+     3. Client to CDN (req)
+     4. cdn to Client (res)
+
+### 
 

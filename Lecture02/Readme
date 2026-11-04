@@ -229,5 +229,28 @@ Note :- Removed the SPOF (Single Point Of Failure) from our simple Architecture.
      3. Client to CDN (req)
      4. cdn to Client (res)
 
-### 
+### Autoscaling of the Server
+ - Autoscalling of the server is not possible in the Updated Architecture till now. 
+ - limitations :- Autoscaling not possible , Autoscaling means if load bad gaya hamare server par then apne aap ek naya server introduce nahi hoga or if users kam ho gaye then apne aap server kam nahi ho jayega. 
+  - Because we know that ki har ek chiz ki cost hoti hai. 
+  - We will be having the CDN only in case if our application is capable of generating that amount of money as cdn is costly. So jitani baar cdn hit hoga utna uske according charges then padte hai. We need optimized the cost. 
 
+- How can we do the AutoScaling ? 
+  - Sticky Session :- means aisa architecture state par dependent hai(Statful Architecture).
+  - Client Sessions :- 
+    - Example (Sticky Session) :- Lets say we have the user1 and user1 request for the web-server1 (we have LB and so architecture jo hamare pass hota hai). Client Sessions basically kuchh asise chize hoti hai, jo web-server ko client ke baare mai store karke rakhna hota hai. Stored Info like :- 
+    - sign-up request of the plateform -> Who will be stored signup details?
+    - After sign-up user1 do req2 to Web-server for seeing the story, then now server will try authenticate the server -> Server will look user1 in the session. If have the details in the session then we will allow user to see the story. 
+
+    - We are having the multiple servers So if the session is stored in one of the server1 and we do req2 to another server then What Happend? 
+      - Server2 will not have the info about the session of req1. So server2 will decline the request2. -> Resposne : "User not found". This all is called the Stickt Session.
+
+    Solution :-  We need to redirect all the request of the user1 to server1(jaha session stored hai). Server2 par request redirect nahi kar sakte kyuki wo user pahchanne se mana kar dega. 
+    
+    Client Session :- Client information that a server needs to store on it, for the identification of the client/user for next time, that will call Client Session. 
+
+    - Http protocol are sessionless(stateless) means inke pass client ki koi bhi information nahi hoti. So har ek request unique hai, server ko har baar ek nayi request milti hai means server ko pata nahi hota hai jo info uske paas aaya eo existing user ka hai ya nahi. 
+
+    - So stateful arachiture are not good as here users become dependant on the server. To solve this issue we migrate from the StateFul Architecture to Statless Architecture.
+
+    - What is StateLess Architecture?

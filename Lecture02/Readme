@@ -254,3 +254,87 @@ Note :- Removed the SPOF (Single Point Of Failure) from our simple Architecture.
     - So stateful arachiture are not good as here users become dependant on the server. To solve this issue we migrate from the StateFul Architecture to Statless Architecture.
 
     - What is StateLess Architecture?
+      - Apne session ko server mai store kar rahe the iske wajah se hamko usi server par hamko req bhejna pad raha tha, so can create a seperate cache(SharedDB) to store the session. 
+      - SharedDB :-  It stores the user's session,  now any user request to any server like server1/server2 its req to the SharedDB for the user details/session info if sharedDb response ok then accondingly server response. 
+      - Conclusion :-  Statless architecture mai client ki info servers mai store na karke ek sharedDb mai store karte or cache ka use bhi kar sakte hai like radis(in memory cache).   
+  
+  - New Structure of Architecture :-  
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - CDN : (Directly attached with Client)
+    - Load Balancer 
+    - Web-Server tier : Web-Server1 , Web-Server2
+    - shared DB : (directly attached with Server tier)
+    - Cache tier : cache (Directly attached with Webserver)
+    - DB(Database) tier : Master-Slave (db scaling) -> (Directly attached with Webserver)
+
+  - While using the sharedDB -> Stateless architecture, hamare LB ko ye nahi karna padega ki user1 ki info specifically usi server par bhejna hai. 
+  - Now we can easily up and sown the server, ab hamke ye khud se karne ki zarurat nahi hai, automatically hoga , How will be happen, We will se latter.
+   - But for now we can understand that we have many server's available (server pool), in that pool we have server which are currently in used and some are some servers are offline(not used now). 
+   - Jab load badega then servers apane aap up ho jayega and LB waha req karne lagega. 
+   Note :- 
+    - For the autoscaling of the server we used the stateless Architecture. 
+    - Stateless Architecture : Ek sharedDb client mai client ki info (session) ko store karwate hai, server mai store nahi karwate. 
+  
+  ### Cookies
+   - Some session are stored in the sharedDb but we have some session we need to store it at the broswer/client side called the cookies. 
+   - Cookies are that client info(session), which will be stored at client side, actually when client sends the request to the server for processing , server req back to the cookies to store that info and send the info back when client request for another request so server can recoginize the server. 
+   - No costing of server will be included if the server is offline. 
+
+  ### Multiple- Data Center 
+   - We have not able to have the international user to our application as the application's data-center's are in the India. 
+   - We have the only one data center till now i.e Web-Server Tier. 
+   - Data center : Different  server's loceted at the same place geographically.
+   - So if koi user aa bhi ja rahe hai then uske liye hamara site slow chalega kyuki unka ye traffic kahi dur se aana chahiye. Packets ko travel yayda karna hoga. 
+   
+   - Multiple- Data Center :-
+     - We are going to create two data center's and We have new structure of Architecture :-
+       - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+       - CDN : (Directly attached with Client)
+       - Load Balancer(LB) :- -> Becomes the GEO Enabled DNS
+       - DC1 -> located at India
+         - Web Tier : WebServer1, WebServer2
+         - DB Tier 
+         - Cache Layer
+       - DC2 -> located at USA
+         - Web Tier : WebServer1, WebServer2
+         - DB Tier 
+         - Cache Layer
+       - SharedDB(Common)
+
+     - GEO Enabled DNS :- Geographically user ka request jaha se aa rahi hai, wahi ke data center par request kp wapas bhejega. 
+       - Each data-center have their on Load-Balancer, own database tier, own caching stretegy hongi. 
+       - So doing this our architecture comes to Multiple data-structure. 
+
+  ### Messaging Queue :- 
+  - When server get the request, server start doing the processing related to request during this server is busy for that at low level we do multithreading, but at high level What we do? Our litancy is incresed, to avoid this we use messaging queue. 
+  - Two main feature :- 
+     1. Producer
+        - Those who produce the task and push it in the dequeue.
+        - Web-Server is act like a producer who take the task from the client and push it in the dequeue. 
+        - Producer is not resposible for the efficency/speed of the consumer to complete the task, producer keep inserting the task in the dequeue. 
+     2. Consumer 
+        - Those who pull the task from the dequeue to complete the task 
+     3. DeQueue (lie b/w producer and consumer)
+         - Have different section. Jaha task ko store karenge. 
+      
+      - This is know as the Producer-Consumer Architecture or Messaging Queue Architecture/ PUB-SUB Model (Publisher-subscriber Model) -> Basically Asynchronous bana diya 
+      - Different Messging queue are : Kafka, RabbitMQ
+
+      - New structure of Architecture :- 
+        - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+        - CDN : (Directly attached with Client)
+        - Load Balancer(LB) :- -> Becomes the GEO Enabled DNS
+        - DC1 -> located at India
+          - Web Tier : WebServer1, WebServer2
+          - DB Tier 
+          - Cache Layer
+        - DC2 -> located at USA
+          - Web Tier : WebServer1, WebServer2
+          - DB Tier 
+          - Cache Layer
+        - DC to SharedDB(Common to DC)
+        - Server tiers to Messaging Queue (Attached with Server's tier of both DC)
+        - messaging queue to Workers/consumers
+
+### Sharding (DB Partioning) :- 
+  - 

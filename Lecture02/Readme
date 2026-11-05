@@ -336,5 +336,37 @@ Note :- Removed the SPOF (Single Point Of Failure) from our simple Architecture.
         - Server tiers to Messaging Queue (Attached with Server's tier of both DC)
         - messaging queue to Workers/consumers
 
-### Sharding (DB Partioning) :- 
-  - 
+### Sharding (DB Partioning / Horizontal scaling)  :- 
+  - Problem :-  So hamne database ko abhi sirf replicate kiya tha, using master-slave architecture so jo data master ke pass hai same data slave ke pass bhi hoga. If having the millions of data and we also know that these are also having some limitations(hardisk).
+  - If the master and slave are capable to store about the 10 millions of data only. So we need to scale our database amd here also two to scale :- 
+  1. Horizontal Scaling :- 
+    - Needed then add new DB
+    - Partitioning of Data : Distribution of Data to multiple DB. For distributing the we use the partitioning algorithum. 
+      - We used mod operator like S.no mod%3(no. of DB, jaha data dalna hai)
+      - DB : DB0, DB1, DB2 -> We know the mod%3 -> possible outcome will 0,1,2 only.Ab serial no ko mod karte jayenge jo out put aayega us DB mai store karte jayenge. 
+      - sharding key -> serial number, ye hamko lena padta hai 
+  2. Vertical Scaling:- Apne DB ke accessories ko badte jayenge, and here too have the limit of scaling DB, at some time we can addup.
+
+  - So sharding karne se, problem ye aayegi ki pahle server directly DB ko request kar deta tha lakin ab usko Multiple DB ho gaye hai then Ab server pahle req bhejega ShadingKey mod%3. Phir yaha se pata chalega ki data kaha hai phir yaha se request us particular db chala jayega. It return to Mod and mod returns to web-server. 
+
+  - Reshading of the will take very much of time which also called the Database Migration. So it is very complex task. To reduce complexity we use the different algo such as mulger Algo
+  Note :-  Mod opertion  ko pata hai ki konsa user kaha milega. Wo kuchh algo use karega or calculations karega usko pata chal jayega server kiske liye request kar raha hai. 
+
+  - How we can apply join operation? Because Data present at different DB -> Data De-Normalization. 
+
+  Finial Architecture :- 
+    - Client tier :- Client1 : WebBrowser Client2: MobileApp 
+    - CDN : (Directly attached with Client)
+    - Load Balancer(LB) :- -> Becomes the GEO Enabled DNS
+    - DC1 -> located at India
+      - Web Tier : WebServer1, WebServer2
+      - DB Tier : Shades1 :- Master-slave , Shades2 :- Master-slave
+      - Cache Layer
+    - DC2 -> located at USA
+      - Web Tier : WebServer1, WebServer2
+      - DB Tier : Shades1 :- Master-slave , Shades2 :- Master-slave 
+      - Cache Layer
+    - DC to SharedDB(Common to DC)
+    - Server tiers to Messaging Queue (Attached with Server's tier of both DC)
+    - messaging queue to Workers/consumers
+    

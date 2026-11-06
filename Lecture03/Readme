@@ -1,0 +1,59 @@
+### CAP Theorem
+- In the previous lecture we were focused on scalability, which is provided by the distributed system. So if want our application to be scaled up then the sysytem should be distributed not centralized.
+- Not Centralized because in that we have the one center server if it fails system fails. 
+- CAP (Consistancy Availabilty PartitionTolerance) 
+  - Consistancy :- 
+    - If any user want's to read/write from the database(any db), then it should get the same data on each time.
+    - Clients gets the same data at the same time, no matter the node(db). 
+    - So if I upload an image to the instagram then say if it stored in db1 any my friend is at another place it request to the db2 then he should got the data.
+  
+  - Availabilty :-
+     - If client request the data for taking, then it should got the reponse. 
+     - Whenever client sends a req, he should get the response. 
+     - So jab bhi ham Instagram ko load kare then ye load ho jana chahiye, fail n ho, is se fark nahi padta ki data naya hai ki nahi. 
+  
+  - PartitionTolerance :- 
+    - Partition :- So we know that db are in distributed system, sometomes some nodes becomes unabailable. 
+      - If at the Datacenter(node) if earthquakes, draughts,etc comes and data-center destroyed. 
+      - if the link between the db are disturbed.
+    - PartitionTolerance : Hamara system partition ko jhel jaye. 
+    - Our application should always be up or always operate.   
+  
+  - Ex 
+  - In a last lecture we have replicate our database called Master-Slave Architecture. 
+  - So we have 3 nodes which represent database like db1, db2, db3, etc
+  - Nodes have the replicated. 
+  - The relation b/w them if one have new data then it send's other two. 
+
+  CAP Statement : No matter what, you will always get maximum 2 out of three.
+  So we got these combination : CA, CP, AP. 
+    - Partition Tolarance is manadatory. 
+      - Kyuki koi aise application jo kabhi down ho sakti hai, then wo paisa generate kaise karegi, it would become the centralized sysytem. We were creating DS becasuse of its scalability and down nahi hota tha if one down then then dusra aa jata and so on. 
+    - Now we have two option left Availablity and Cosistency, throughtout the HLD learning we will be seeing in the application what we need to choose between these.
+
+Why we never achieve three?  
+- So lets say if all three are possible, if have the user on instagram want's to make a post, means storing data in database, 
+- If the database in sysytem is consistent then when the post receive at db1, then db1 frequently pass the data to other two database. 
+
+- If the system ensures availability, on every request it should get the response, if db1 is not consistent then it must have old data then it return those data. If consistent then it returns the new data. 
+ - If db1 is down, then we farward the request on db2 or db3.
+
+- If the system ensures partition Tolerance, If the db3 is down means db3 is unable to communicate with  other db. So if db3 down hone ke baad hamara server up hai then it means we are ensuring partition Tolerance.
+
+If having the partition tolerance in system, So lets try to achieve the Cosistency and Availability one by one. 
+Cosistency :- 
+ - Now if we want to have data consistant along the sysytem, if user has update the profile pic at db1. If user at different location try to access the data from the db3, than that user will got the stale data-> db3 se connection tut chuka hai. 
+  - To stop the access of stale data at db3 we need to stop the access of read and write at db3. -> for this We have to stop the write operation at db1 and db2 means jab koi data write he nahi hoga then usko update he nahi karna hoga aur data consistant rahega.  
+   -> Now if any user comes to update the profile, we reponse it back that profile update nahi ho sakta -> Doing this we compramised the Availability factor. 
+
+  Availability :- 
+  - At any node, if user wants to do operation like updating profile,etc capable to do operation successfully. 
+  - So Db3 is unavilable for now then operation held at db1 and db2 will be not updated at db3, user accessing the data will be not available to acess the data or got stale data. 
+   - If it got stale data then our consistency got compramised. 
+  
+  By this example we can understand that if have the partotion tolerance then we never achive the Availability and Consistency together.   
+
+#### Consistency vs Availability :- 
+  - 
+
+

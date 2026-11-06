@@ -154,5 +154,23 @@ Cal for 5 year = 13pb/day * 365 days * 5 y = 24000PB
 
 Note : Jaise ham kisi bhi algo ka complexity nikalte hai n, waise he ham HLD mai Back of the Envelope nikalte hai. 
 
+### Monolith and Microservice :- 
+Monolith : A application in which all things is inside it. We are written the all logic inside the app deploy the application. -> Becomes the Single Code Repository
+ - Ex Zomato
+    - A section for handle the order's 
+    - A section for handle the restaurant
+    - A section for handling the user  
+    - A section for handling the payment's
+ - Monolith application say's that we have written sections in the single repository. This is legacy application, till now we have been using this approch. 
+ - Where Microservices are new concept of design in the HLD. 
 
+ Advantage of the Monolith :- 
+  - Fast :- Let's say if order wants to communicate with payments then it just have to call an method. Interaction b/w the section are just the method call's. 
 
+ Disadvantage of the Monolith :-
+ - Scalability :- Let's say that we are having, high no of orders, then we need to add server for order but in monolith we cannot add it specifically to order's, we have to scale-up the server of whole application. -> Server cost will be high. 
+ - Heavy(CI/CD) :  If we are having the different module in a single application then deploy the application become difficult, If we want add new feature to order then we need to deploy all the application again. 
+- Debugging and Testing : If change occur at any section of application then to check that Is we donot got the any problem due to that change. -> application become tightly coupled. 
+
+Microservice :- 
+-

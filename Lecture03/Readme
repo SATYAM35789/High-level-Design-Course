@@ -113,4 +113,46 @@ Storage Unit :-
 
   Note :  To do the calculation you must have this table in your mind. 
 
+Assumptions :- We need to take  the assumption because we donot know the ecact no. of user of instagram :- 
+ 1. Monthly Active Users : 2 Billion and 60% of these users use the insta daily, so the 60% of 2 Billion is equal to 1.2 Billion. 
+  - Also called the Daily Active User's is 1.2      
+ 2. Why to use the instagram :- let's take two of them :- 
+    1. User see feed : Whenever any user see the post then that request(read) go to the db. 
+    2. User Post Pic : Whenever any user post the post then that request(write) go to the db. 
+
+    3. Let's say that a user check the feed 30 times a Day (Average).
+    4. User publish one pic/reel a day 
+    5. We will be estimating for the five years , now let's find the QPS. 
+
+  - Feed view QPS :- 
+    Daily feed Request for a Day : 1.2B * 30
+    Daily feed Request for a Day in sec : 1.2B * 30/86,400 -> (24*3600 = 86400) = 420k
+     - So 420k request per second -> we have to feed on Instagram. Means 420k baar db hit  hota in sec. 
+    
+    - Peak QTS :- 2 * QPS = 840k/sec 
+      - For the occassion when the chances of hiting of feed will be so high. 
+      - we have to also note this is only for the feed request. 
+
+  - Upload QPS
+    QPS :
+      - Daily upload Req in a Day : 1.2B*1 
+      - Daily upload Req in a sec : 1.2B*1/86400 = 14k/sec
+      Peak QPS :- 2 * QPS = 28k/sec
+
+- Storage Unit :- 
+  Assumptions :- 
+  1. 20 % users will be pushing a video (per video length : 50MB) and 80% of the users will pushing Photo(per photo length : 1MB).
+
+  Photos storage unit :- 
+  1. photo per day : 1.2B*80% = 1B
+     1 Billion * 1 MB = 2^30 *1 * 2^20 = 2^50 -> 1PB
+  2. Video/day : (1.2B *20%) * 50MB  = .25B * 50Mb = 0.25 * 2^50 * 50 = 12 * 2^50 = 12PB.
+
+Total : 12TB + 1TB = 13TB  required to store the data for a day. 
+
+Cal for 5 year = 13pb/day * 365 days * 5 y = 24000PB 
+
+Note : Jaise ham kisi bhi algo ka complexity nikalte hai n, waise he ham HLD mai Back of the Envelope nikalte hai. 
+
+
 

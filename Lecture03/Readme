@@ -54,6 +54,33 @@ Cosistency :-
   By this example we can understand that if have the partotion tolerance then we never achive the Availability and Consistency together.   
 
 #### Consistency vs Availability :- 
-  - 
+- Consistency :- 
+  - Response, up to date hona manadatory ho
+  - Ex 
+    - Banking application, paisa cut gaya aapke paas se but jisko bheja uske pass pahuch he nahi, so consistency matters. 
+     - Jo application consistant hoti hai, unke servers mainteanance mai jaate. We have seen in banking application. 
+- Availability :- 
+  - Response, up to date optional ho but Always get clear reponse is mandatory.
+  ex 
+   - Aise application jaha user experience matter karta hai, waha availablity ko priority de denge. 
+   - like Instagram, twitter, Netflix, etc. 
 
+ Availablity Numbers :
+  - Many times we have asking for the Down-Time of an application. 
+    - structure
+      - Appliaction (Instagram)
+      - User 
+
+    - So there is contract b/w App and and each user exist. In the contract, it have the detail about how many time the application may be down(under-mainteanance) in a year.
+     - If the application contract says that ye kabhi bhi down nahi ho sakti that means wo 100% available application hai means 365 days available. 
+     - 99% down time means 99% of 365 days = 3.65 days it becomes down. 
+     - 99.9% down time means 99.9% of 365 days : 8.77 hours, average time down rahe
+    - So is tarah ham nikalte hai availability numbers, ho batati hai ki purre saal mai koi application kitna down ho sakta hai. 
+    
+    - The the real-world if any application is below the 99% then that application very poor and that application HLD is very poor. 
+
+    - The application like Google, Amazon, Microsoft lies b/w the 99.9 and 99.99% percent criteria. 
+    - So we define the application on the basis of number of 9's. -> Jitna jayda number of nine utani achhi application. And this called the availability numbers. 
+
+### Back of the Envelope Calculations   
 

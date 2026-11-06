@@ -80,7 +80,37 @@ Cosistency :-
     - The the real-world if any application is below the 99% then that application very poor and that application HLD is very poor. 
 
     - The application like Google, Amazon, Microsoft lies b/w the 99.9 and 99.99% percent criteria. 
-    - So we define the application on the basis of number of 9's. -> Jitna jayda number of nine utani achhi application. And this called the availability numbers. 
+    - So we define the application on the basis of number of 9's after point. -> Jitna jayda number of nine utani achhi application. And this called the availability numbers. 
 
-### Back of the Envelope Calculations   
+### Back of the Envelope Calculations :-
+- It says whenever we were building the high level design application, then we do some calculation's. The calculations :- 
+- let's we have an application, and we need to find out how is the application? means How many user's are supported on the application.  
+- To find or calculate we have the some numbers :- 
+  - QPS(Query Per Second) 
+  - Storage Unit 
+
+QPS(Query Per Second):- 
+ - On the application, How many qurry(Read & Write req) will be coming per second?
+   Read :- Select
+   write : Insert, Delete, Update
+   - able to find the how many read and write operation wil be happen on the database. So able to estimate the RAM of the database, If using cache then how many cache we need to store, We will need the inmemory cache or not, how replication we need to make db, etc
+
+Storage Unit :-
+- Ye hamko batata hai ki Database ki memory kitani honi chahiye, how many information it will be storing throughtout the time when the application is up. 
+- We will be calculating for the period of time, like says for 5 years, if we want to use the database for 5 years then database hamko kitna bada database lena hoga. 
+
+#### Back of the Envelope Calculation for Instagram :- 
+- Power of 2 :
+  - RAM will be incresing in power of 2. 
+  - 1 GB : 1024 MB : 2^10
+  
+  - 10 : Thousands : KiloByte
+  - 20 : Millions : MegaByte
+  - 30 : Billions : GegaByte
+  - 40 : Trillions : TeraByte 
+  - 50 : Quadrillions : PetaByte
+  - 60 : : ExaByte
+
+  Note :  To do the calculation you must have this table in your mind. 
+
 

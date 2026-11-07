@@ -191,4 +191,52 @@ Microservice :-
      - Lets say MS1 interactact with MS2 directly, so if any code change occur at MS2 then Is we have to deploy only MS2? No, because MS1 depends on MS2 so we have to change the MS1 also. 
      - Dependency problem will be occured, services depends on the microservices (chain) have to go and check. 
 
-#### Different Phases of a microservice :-  
+### Different Phases of a microservice :-
+So there may be the sceanrio that we will be having the monolith application or from starting we have to create the microservices then the phases will be are :- 
+1. Decomposition
+2. Database
+3. Communication
+4. Deployment
+5. Obserability  
+
+1. Decomposition (monolith -> microservices) :- 
+ - If our application is monolith, and we are breakdown it in the microservice then How will going to that? 
+  - So decomposition has some design pattern through which it can able to breakdown it in the microservices. 
+
+2. Database :- 
+ - Here will be understanding which type of database we required while creating the microservices application. 
+  - SharedDB Or UniqueDB ?
+  - SharedDB :- Different microservices uses the same database. 
+  - UniqueDB :- Each microservices has it's own database. 
+  Note : Generally Unique-Database is suggested whereas sharedDB has its disadvatages. 
+
+3. Communication :- 
+ - How two microservices will be communicating? So they are communicating through htto call (json request send and recive res). Microservices will be doing so but microservices will be having two way to communicate  :- 
+ 1. API calls 
+ 2. Event Driven System (better)
+
+4. Deployment :- 
+ - How will the microservices application will be deployed? How will your CI/CD pipe will be looklike. 
+
+5. Obserability :- How will we monitor our application? 
+
+-> Deploement and Oberability phase will be handle by DevOps Engineer. So in the HLD will be mainly focus on the left phases of the Microservices. 
+
+#### Decomposition Phase :- 
+These phase state that if you have a monolith application --> How will you break it to a microservices architecture? 
+To answer we have two way which call as the design pattern of decomposition :-
+1. Decomposition by Business Logic 
+2. Decomposition by sub-domains 
+
+1. Decomposition by Business Logic :- 
+- So we will having the monolith Zomato application in last example, In which we have the microservices like orders, payments, users, restaurants,etc. 
+- Brraking down the application in terms of business logic. Aise kon si business identity ya entities hai jo aapas mai interact karti hai. 
+ - Like Zomato ki Business identity kya hai? kis kis ko handle karti hai? liek order ko microservice bana do, then payments ko ek service bana do, users ki ek microservice and so on. 
+
+Disadvantages :- Developer should be aware of entire Business logic of the application. Then only able to breakdown into the microservices.  
+
+2. Decomposition by sub-domains :- 
+ - So when we were using the Monolith Application then we will be having some api calls like Zomato Application :-  /orders, /payments, /user etc 
+  - jo bhi request /orders domain par aayengi unko ek microservice bana do aur jo /payments domain par unko ek service bana do and so on kardo. 
+
+##### Strangler Pattern :-  

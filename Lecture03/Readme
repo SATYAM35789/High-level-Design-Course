@@ -173,4 +173,22 @@ Monolith : A application in which all things is inside it. We are written the al
 - Debugging and Testing : If change occur at any section of application then to check that Is we donot got the any problem due to that change. -> application become tightly coupled. 
 
 Microservice :- 
--
+- So in microservice we donot create the Big service, we divided it into the small services like order-service, restaurant-service, orders-service, etc Different features are implemented as the different services. 
+-  Advantages :- 
+  - scalability becomes easy as now if wants to increse the server for orders we can do so. 
+  - new features can be added, easily. 
+  - CI/CD becomes light, so if we have done any change in the any services then we have to deploy onlt that service's. 
+- Disadvantages :- 
+  - Now the interaction between the featers/layers becomes the http call's.  Now this application deploy at different location on different servers , so we need to call on the internet using http calls. 
+  - slow comparetively (latency)
+  - The disadvantage's of this architecture will exist, but it will be solved through the design pattern :- 
+  1. Transaction Management 
+     - We are having different services like MS1, MS2, MS3. We are aware with ACID property, if we have done any transaction, jab tak paisa transfer nahi hota, tab tak ham usko transaction nahi bolenge. If not transfered got any error and money transfer fails then it would be rollback.
+     - So if we are having the monolith type of application then we have the only one database exits which is directly attached with monolith application, then interaction between them becomes easy to manage when only one server exists. 
+     - But in the microservices, each have their own server and Database, so any transaction which uses all the microservices, then how we manage that transaction. 
+     - We have an algorithum which solve this issue. 
+  2. Multiple Microsercice join :- 
+     - Lets say MS1 interactact with MS2 directly, so if any code change occur at MS2 then Is we have to deploy only MS2? No, because MS1 depends on MS2 so we have to change the MS1 also. 
+     - Dependency problem will be occured, services depends on the microservices (chain) have to go and check. 
+
+#### Different Phases of a microservice :-  

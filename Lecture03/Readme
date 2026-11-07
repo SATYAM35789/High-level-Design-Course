@@ -240,3 +240,20 @@ Disadvantages :- Developer should be aware of entire Business logic of the appli
   - jo bhi request /orders domain par aayengi unko ek microservice bana do aur jo /payments domain par unko ek service bana do and so on kardo. 
 
 ##### Strangler Pattern :-  
+How will you do decomposition? 
+- If having the monolith application like Zomato, which is live or deployed somewhere, then how will you going to decompose it. 
+ - Monolith application will be directly breakdown into the microservices and then deploy it somewhere. During this procedure, it will take a lot of time. It will state that whenever you will be converting the monolith service to microservice then do that in stwp by step. 
+ - Strangler general meaning is to dheere-dheere gala goto. So monolith application ko dheere-dheere convert into microservice. 
+
+Understanding How monolith patterb works :- 
+ - So abhi hamare pass ek monolith application hai Zomoato naam ki jisme orders, payments, restaurants,etc features hai.
+- Starting mai, jab ye monolith application kahi deploy hoga tab saari request monolith wale server par ja rahi hogi.
+- So we need to make microservices then we took Order features and we will create the orders services (all business logic), during the creation request puraani application par he hai. 
+- After the creation of orders microservices using domain decomposition, orders ki traffic(req-res interaction) ko ham order microservices par bhejne lagenge. 
+- So similarly aur bhi microservices banate jayenge aur traffic kam karte jayenge monolith application se. So dheere dheere aise he microservices ko banate jayenge aur request ko shift karte jayenge. 
+
+- We can transfer the request from monolith to microservices in the following ways :- 
+1. API based : If /order par reuest hai toh send it on...
+2. Loadbalancer : If an application have 100 users request per day, if we have created the all microservices and we donot know about the bugs in the microservices application we have made. 
+- So isme kuchh users ko microservices application par bheje aur kuchh application aur sab monolith application, par if microservice application handle those users then we will increse the percent or no. of user on microservices and so on till all users are handled using microservices application. 
+ - If failed then send it slowly back to the monolith application. 

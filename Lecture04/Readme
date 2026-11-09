@@ -29,7 +29,7 @@ When we doing scaling to millions of users, we are doing the onse user setup to 
       - So we have done the post call till now in this section. so what if user want to access data from the database. 
        - Then we do the same steps we find out the hash value and then jo bhi hash value us database-index par chale jayenga aur waha ja kar data read kar lenge. 
 
-    ### Limitation's of database
+    ### Limitation's of database sharding
     Horzontal scaling :- if database is loaded then  we can add the new database. And if database ko apne according use kar sake. If need then able to db if not needed then remove db. 
      - So when we add new database then our hashfunction -> calculation will be changes. Then we have to do the remigration of all the data. Because doing changes in the modulo function will affect the all rows. 
      - Database migration is very complex and try to avoid doing database migration. 
@@ -38,4 +38,38 @@ When we doing scaling to millions of users, we are doing the onse user setup to 
   - Database sharding is brute-force-technique and primitive techniqe for hashing technique. 
   - In sharding we want that all the database get hit/request/load  uniformly rahe. 
 
-## Consistant Hashing :-  
+## Consistant Hashing :-
+- So we have limitations in Hashing method due to the modulo operator. So we have to replace the modulo operator. 
+- Consistant hashing includes three main concept :- 
+  - Hash Ring
+  - Db Hashing 
+  - Keys Hashing 
+
+- Hash Ring :- A ring which holds many value. Lets say the values lie b/w 1-100. We have just distribute the value over the ring -> just like cyclic array.
+- Now we try to hash the different DB we have like DB1, DB2 ,DB3 and DB3. let's sharding key =IP address of DB. Let say that we have got the hash value (hash(IP)) between 1-100 range. 
+ - So in charo DB ka, IP address ke according jo bhi value hamko mil raha hai us DB ko hashring par rakh denge. Lets say we got the value 1,25,50,75 for respectively databases we have. 
+ - So we have our databases in the above two points. 
+- Note :- Pahle ham Key ko hash kar rahe the lakin ab ham pahle database ko hash kardo then go for the key hashing. 
+
+- Keys hashing :- 
+ - We have the different keys such as key0=0, key1=1, key2=2, key3=4. 
+ - find hashvalue : hash(key0) = 11 , hash(key1) = 41, hash(key2)=65 and so on 
+ - ko bhi value aa rahi hai Hash ring us position par rakh do. 
+ - So abhi tak keys ko sirf value mila hai hash ring ka, abhi server ka access nahi mila hai.So server assign karne ke liye ham key se clock direction mai ghumenge jo bhi pahla server milega waha us key ko assign kar denge. 
+
+Advantage :- 
+ - Only affected keys need to migrate :-   If introducing new database say it Db5 lets say its iska DBHashing ka value 90 hai, then Is DB ko 90 value par rakh denge hash ring mai. Ab hamko sabko keys ko migrate nahi karna padega jaha naya Db add kiya uske just pahle wala server se newserver  mai jo value tak jo bhi  keys hai unko move karna hoga. Similarly when any server/database go down then uske pahle wali database server ke baad wali keys ko next clock direction mai server par chali jayengi.
+  - Database ke migration ko reduce karta hai. 
+
+- Conclusion :- So isme ek hashRing lo, aur jo bhi db server hamare pass present hai unka hashvalue nikalo hashfunction ke help se using the databaseIP. And then point this db on on the basis of the hashvalue on the Ring hash. Then iske baad keys ka hashvalue nikalo then isko bhi point kardo HashRing par point kar do, ab key ke clock-direction mai jo bhi pahla Dbserver aata hai us key waha stpre kardo. 
+
+limitations :- 
+- Uneven distribution of the keys :- So when we introduce the hash function we try to take the hashfunction which takes uniformly distribute the keys. So in statixtices we have learnt about standard deviation, standard deviation should be minimized here. 
+ - In criptography, we took that hash function, which is nearer or equal to prime number. Because prime no. uniformly distribute the data. If odd/even then it divided two parts mostly. 
+ - So here we try to minimize the standard deviation, for uniformly distribution of data. Standard deviation state how unifornly data is distributed? 
+
+- But this problem is not faced during the Modulo operator bases hashing because  modulo operator responsible for the hash's are distribute close to all DB.
+
+-> So we need to have the good hashfunction so that we have the uniform distribution of the data/keys along the databases. 
+
+## Virtual Nodes (Replicas of Orginal nodes) :- 

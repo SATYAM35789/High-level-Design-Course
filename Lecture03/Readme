@@ -257,3 +257,83 @@ Understanding How monolith patterb works :-
 2. Loadbalancer : If an application have 100 users request per day, if we have created the all microservices and we donot know about the bugs in the microservices application we have made. 
 - So isme kuchh users ko microservices application par bheje aur kuchh application aur sab monolith application, par if microservice application handle those users then we will increse the percent or no. of user on microservices and so on till all users are handled using microservices application. 
  - If failed then send it slowly back to the monolith application. 
+
+#### Database Phase :-
+State that, each microservices can have : 
+1. SharedDB
+2. UniqueDB 
+
+What to use between this two, will be understand in this phase? 
+1. SharedDB :- 
+Advantages of using sharedDB are :
+- Simple to carry operations : Applying querry operation like join, etc
+- Transaction managment easy : ACID properties
+
+Disadvantages :-
+- Cannot be scaled properly
+- limitation of either sql or nosql :- If the different microservices want to use different type of database like order:Nosql and Restaurant:sql then we are having only one database
+
+2. UniqueDB 
+- Each service have their own database and the disadvantage of sharedDB will be overcome here. 
+
+Advantages :- 
+- Each services have their own data base, so no limitation of either sql or nosql. 
+- Scaled properly as we have own database then if any services demand for more then we can add up easily and vice-versa. 
+
+Disadvantages :- 
+- join application becomes complicated -> to solve this we have Design patterns called CQRS. 
+- Transaction management -> If the transaction, needed/used different microservices then how will manage that if transaction failed ? How wil do the rollback when different microservices are involved. -> SAGA pattern. 
+  Note : No microservices can another microservices database in unique db. If any microservices need the another microservices data then it will go that microservices and ask that service for the data. 
+
+If this disadvantages are solved then it would become the perfect to use.
+
+SAGA Pattern :- 
+  - It will dissolve the issue of the transaction  in the UiqueDB, So basically if the rollback has been done on the microservices and there will be some microservices depend on it then How the rollback will be done? 
+  - A transaction can be rollback / success but cannot be stop in the middle of somewhere. So we have to the rollback/success on the transaction, How will be do that over the internet? 
+  - Two ways :- 
+    1. Event driven sysytem
+    2. Orchestration 
+    - Structure
+      - order - Nosql
+      - payment - SQL
+      - Restaurant - SQL
+    
+    1. Event driven sysytem / Choreography:-
+    - When ever the transaction happened it will first do the change in their databasse then it call the Payment to use their database and so on. So if at the another microservices like restaurant has done the rollback then How this will info will be send to payment and order microservices if they are involved in the transaction. 
+    - Using Event driven sysytem -> Event listener were exist there. 1. One who listen/consume the event. 2. One who produce the event
+     - The consumer will be listening the event whenever the event comes to the listen it will perform some operation, similarly we will be doing in the event driven system. 
+     - So whenever a microservice will do some change in the database will generate/publish the event. next microservices will be works as the listener, so when the event is published then it will do some changes in their database and then it will generate/publish the event and next will be listen and do the changes accordingly. 
+     - If at any microservice, transaction fail's then that microservice will generate the rollback event. So it will be listened by their parential microservice and it also got rollback and generate then their parential microservice will also do the rollback.  
+     Note : Treat the event as notification. 
+
+    - Advantage and Disadvantages :- 
+      - Complex to make or design -> Asynchronous based. But once if it is created then it is faster than Orchestrator services.
+
+    2. Orchestration :- 
+     - Here we create a service which called as orchestator service. We have different service like order : Nosql,  payment :sql, Restaurant:sql, etc. So if these different service are included for some task like transaction then orchestrator service will be responsible for doing so.
+     - So if transaction/ user Create an Order will be done here then :- 
+       1. Orchestrator service will request to change in order, after doing change it will response back to the orchestrator service. 
+       2. Now orchestrator service will request to the payment microservice for doing some changes , if it do so then it will response back to the orchestrator service. 
+       3. orchestrator service request to the restaurant microservice to do some changes if it done then it will response back. 
+
+       - And these request and response are normal http calls. 
+
+       - if  restaurant fails and send the response of roll back to the orchestrator service then orchestrator service will request the for rollback to the other to earlier microservices payment and Order for rollback.
+
+      - Advantage and Disadvantages :- 
+        It is creation is easy but it is synchronized the process and tighly coupled. 
+
+  CQRS (Command  Query Request Seperation) Pattern :- 
+   - It solve the join operation problem. So the table present at different servers will be solved by this Pattern. 
+   - Seperate the Command and Querry. 
+     - Command : Write operation(update, delete, insert) is command.
+     - Query : Read Operation (select) is query. 
+   
+   - So we are unable to apply the join operation because the tables are present at different database. CQRS state that create one ViewDB -> Where only Read Operation can be done only. In the viewDb we have the all the table related to all microservices and we apply the join operation on viewDb. 
+   Note :- So Write opertaion will be done seperatly on each table and Read operation will be done on the ViewDb 
+   - Master-slave model is supported this appproch. Where we say master se write operation and Slave se read karo. 
+  
+     
+
+
+

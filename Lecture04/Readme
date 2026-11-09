@@ -46,7 +46,7 @@ When we doing scaling to millions of users, we are doing the onse user setup to 
   - Keys Hashing 
 
 - Hash Ring :- A ring which holds many value. Lets say the values lie b/w 1-100. We have just distribute the value over the ring -> just like cyclic array.
-- Now we try to hash the different DB we have like DB1, DB2 ,DB3 and DB3. let's sharding key =IP address of DB. Let say that we have got the hash value (hash(IP)) between 1-100 range. 
+- Now we try to hash the different DB we have like DB1, DB2 ,DB3 and DB4. let's sharding key =IP address of DB. Let say that we have got the hash value (hash(IP)) between 1-100 range. 
  - So in charo DB ka, IP address ke according jo bhi value hamko mil raha hai us DB ko hashring par rakh denge. Lets say we got the value 1,25,50,75 for respectively databases we have. 
  - So we have our databases in the above two points. 
 - Note :- Pahle ham Key ko hash kar rahe the lakin ab ham pahle database ko hash kardo then go for the key hashing. 
@@ -73,3 +73,21 @@ limitations :-
 -> So we need to have the good hashfunction so that we have the uniform distribution of the data/keys along the databases. 
 
 ## Virtual Nodes (Replicas of Orginal nodes) :- 
+- so hamare pass server bahut kam iske wajah se standard deviation high ho raha hai. So we let introduced the replica's of the four DB we have designed. 
+- So let's create virtual node, which is the database but it is the replica's/copy of the database.
+- So lets name the replica of DB1 as DB1_1 -> first virtual node.
+  - The replica database has also some Ip address let's find out the hashvalue of that using its Ip address and locate them in hashRing. 
+  - Similarly we introduced the one more virtual node of DB1 as DB1_2. (2nd virtual node of the DB1) and find out their hash value and located them in the hash ring. 
+- Similarly saare database like DB2,Db3 and Db4 ke replica bana kar usko bhi hashRing mai locate kardo. 
+
+-> By doing so we increase the no. of DBserver point in the hashRing. So they are such a order if the key's hashvalue is nearer then also can got other server's as the copy of the one Database is present at different location on the hashring so key may come to that point which also means ki wo Original database mai jayega jiska replica hamko mia hai.
+ - Generally raste mai pahle ek he dukaan thi, ab hamne franchise bana ke aur bhi duaane khol li then -> Ab hamare reachablity to customer aur bad jayegi. 
+
+Vitual Node :- 
+ - In master-slave architecture, we have studied that we have one main server and we have multiple replica's of the database.
+
+- In real-world we take the many replica's of the one server like 1000 of virtual node. and thr range of ring is also bigger. 
+Note :- 
+1. Try to use the good hash function 
+2. Try to create more virtual node, so if the keys are nearer then also they got the different database. -> So the load distribution is low. 
+

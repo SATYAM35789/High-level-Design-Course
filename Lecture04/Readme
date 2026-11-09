@@ -1,0 +1,41 @@
+When we doing scaling to millions of users, we are doing the onse user setup to millions of users. In last we are having the database sharding concept. So we will learning it in detail and see the Consistent Hashing-> this is one of the revolutionary concept of HLD. And we will be also learning about the load-balancers in detail. 
+
+## Database Sharding :- 
+- We are knowing the proper flow of the request in the client-server architecture, which includes client, LB, server-tier, DB-tier, and DNS. So in the DB tier we will be doing the sharding using Modulo function -> we find the hash-function and redirect to the database. -> we will be seeing the limitation of the modulo-function and then see how Cosistant hashing solve/overcome that problem. 
+
+- Exploring the DB tier :- 
+  - Earlier we are having the Single DB which has its configurtion like Ram and HD size. 
+  - Do not get the confuse between the Replication and Sharding. 
+   - Replication means Master-slave arichtecture, jaha aur DB bana denge of same size, ek copy bana denge. We will be making this because if one database is fail/ crash then we can save the  our data. 
+   - In sharding, If having the large data then our DB will be fulled/ and all request will come to that DB only. In Sharding which is also called the Horizontal scaling in DB. -> Where we stored the large amount of data in different DB. Data ko ham different db mai store karke rakhte hai, kuchh amount ek data mai aur kuchh amount ek data. (Physically alag DB mai stored but logically single jaise he hote -> ModuloFunction will help doing so). 
+
+- Hash methods --> Modulo Operator 
+  - Discription of hashfunction : hash(value) = integer (where value may be string, integer, boolean,etc)
+  - In hashing we will have been learnt about the working module operator in the distribution of the key. 
+  - Key : A parmeter on which basis we stored the data in the DB/ hash. It may be integer, string, char, etc -> user ke baare any detail jo unique ho. 
+   - key1:1, key2:2, key3:3, key4 : 4 ...
+   - So let's they 1,2,3,4 are value of the id of table. Which is also called as sharding on the basis of which we divide the data and stored it in the different DB. 
+   - So firstly, Bigger Database stored all the information -> It can handled the load then we shared the data. 
+   - So Now have the DB1, DB2 and DB3 as the database. Now we want that logically ye same rahe then :- 
+    - Now the request-response passes from the server -> LB(Hash/Function) -> [DB1 ,DB2, DB3] 
+    - Hash function has modulo operator (%)
+    - Let's see the working / data flow :- 
+      - lets find hash(key0) = 0 then the resultant of hash function will be modulo with no. of database we have. 
+      - modulo(%) because it gives the range between 0 to n-1. 
+      - let indexes of database are 0 , 1, and 2. 
+      - so key0 ka resultant value 0 tha so wo 0 index wale database mai store ho jayega.
+      - so aise key ki basis par database mai value store hota jayega.  
+      - We have different algorithum for to implementation this like we have an algorthum SHA-1(in criptography), which help in calculating different datatypes ka ek integer value nikal kear deta hai.
+      - So we have done the post call till now in this section. so what if user want to access data from the database. 
+       - Then we do the same steps we find out the hash value and then jo bhi hash value us database-index par chale jayenga aur waha ja kar data read kar lenge. 
+
+    ### Limitation's of database
+    Horzontal scaling :- if database is loaded then  we can add the new database. And if database ko apne according use kar sake. If need then able to db if not needed then remove db. 
+     - So when we add new database then our hashfunction -> calculation will be changes. Then we have to do the remigration of all the data. Because doing changes in the modulo function will affect the all rows. 
+     - Database migration is very complex and try to avoid doing database migration. 
+
+  - To avoid this limitation we have the concept consistent Hashing -> name suggest ek aisa consistant algorithum jo consistant ho. Means while scaling the database database migration kam se kam ho. Jayda data ko hamko move n karna pade. 
+  - Database sharding is brute-force-technique and primitive techniqe for hashing technique. 
+  - In sharding we want that all the database get hit/request/load  uniformly rahe. 
+
+## Consistant Hashing :-  

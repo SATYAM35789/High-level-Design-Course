@@ -50,4 +50,24 @@ How  to implement the rate limiting? To implement the rate-limiting we have diff
 
 -> Rate Limiting processing would required some resources,prosessing capabilities, etc So We can simply use the 3rd party application where we do not need to write Algorthms. 
 
+### Rate Limiting on what?? or On what basis we do the rate limiting ?
+- We have three ways to do rate-limiting :- 
+  1. Ip Address basis
+  2. Request Basis (userID based)
+  3. Other ways
 
+  - So on server we have two type of request http/https. So How server will identify that Request coming to it, is unique? 
+  - So if the client sends the request r1,r2 and r3 so if the client of the request is same then Ip of the request will be same.
+  - Lets say we do the rate limiting on the basis of UserId. similarly we can have different ways exist like addressing. Basically Uniqely identify, property  can be the basis of rate-limiting. 
+
+### What happend when rate-limiting is done?
+- Structure 
+  - Client
+  - server : Rate-Limiting
+
+- Suppose A client send the request to the server where the rate-limiting is already attached with server. So server check that the request is not greater than the timeframe we designed. -> If decided 2 req/sec allowed on the basis of the userId. 
+- So if crosses the limit then rate-limiter has to discard this request. So we have two ways to do so :- 
+ 1. Simply Drop the request
+ 2. Sends the response of 429 -> which means too many request. 
+  - Second is the best way to discard the request so user got notified about their request. We can send some information about how many it can send the request, about duration,etc in the headers. 
+  - So ye jo discard messages hai ye rate-limiter he kar raha hai, server involved nahi hai.    

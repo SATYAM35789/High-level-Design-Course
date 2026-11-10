@@ -103,3 +103,74 @@ General Example : Ek kaam ham jisko char logo mai baat diya, single person ko 25
 
 - Jis tarah ki application hai uske according ham database/servers ko introduced karte hai hamare server par. 
 
+
+## Load Balancer(LB) :- 
+- Lies between client and server , it helps to distribute the upcoming request to different servers. 
+- How LB know that which request has to send on which server? What happend and how LB know when any server is  down? and more. 
+
+Application of Load Balancer :- 
+- It is responsible for the
+  Scalability, Availablity, Security and Responsiveness.
+
+- Scalability :- 
+  - So agar hamare pass bahut sare server hai, aur LB saari keys ko uniformly distribute karta hai, toh ham server ko easily scale kar sakte hai. -> Helps in AutoScaling, we will see in the algorithums. 
+  - So LB is smart it know when application is required server or when to remove the server. 
+
+- Availability :- 
+  - In CAP theorem we studied that if the server is down then LB detect that server it will stop farwarding the request on that server. Means waha bhejega jaha request bhej sakte means availability badata hai. 
+
+- Security :- 
+  - So different 3rd parties LB are having some extra features are :-
+    - Stop the DOS, DDOS attack. So in these attack multiple request send by the hacker, so LB is responsible for Distributing the request to multiple server, hence saved from the DOS and DDOS attack. 
+  - It has some algorithums like firewalls -> iskp LB ke bahar he rakhte hai. So request ko Firewall ke through bhejte hai. So firewall identify the spammers. 
+
+- Responsiveness :- 
+  - Response Time / Time To First Bit(TTFB) :- Jab bhi koi request server par aaye then us request ko kitani jaldi process karke wapas as response bhej pata hai. Si LB request ko distribute kar deta hai then iske wajah se responsiveness bad jayegi -> jaldi se request process hoke wapas bhej paayenge. 
+   - Server will be busy when multiple request come to that server. Resposiveness hamare thread pool ko achha rakhta hai, taaki multiple request parallely server par chal paaye. 
+
+
+### Algorithum of Load-Balancer :- 
+- We can divide the Algorithum of LB in two ways :- 
+  1. Static LB :- Simple and have one algo on that basis they distribute the load 
+  2. Dynamic LB :- Complex and also responisble for the server condition (loaded?)
+
+1. Static LB's Algorithum :- 
+  1. Round Robin Algorithum :- 
+    - Structure 
+      - LB
+      - Server : s1, s2, s3
+    
+    - It sends the request in round robin order like pahle s1 then s2 ko and then s3 ko.
+    - So this algo is not responsible for taking care of load on the server it just flow's their priniciple logic. 
+
+    - Limitation :- 
+      - Do not consider the load on any server and Easy to Implement. 
+
+  2. Weighted Round-Robin 
+   - Structure 
+     - LB
+     - Server : s1, s2, s3
+  
+   - This algorithum assign sum weight to each server such as s1:1, s2:5, s3:10. Weight may be anything depending upon the limitiation of the servers. 
+    - For example if weight of s1 is 1 then if RAM of this server is 32 GB then s2 wight is 5 as have it means s2 ki RAM s1 se paach guna jayda. Similarly HardDisk le sakte, etc Basis par assign karte hai. 
+    - Jiska jitna jayda weight wo utna jayda Request ko handle kar sakta hai. 
+   
+   - So isme LB balancer Weight ke according request bhejne lagta hai, so s1 ka weight 1 hai then isko 1 request bhejega aur aage bad jayega, next server ki weight 5 hai then next five request yaha then go further and so on.
+
+  - Limitation :- 
+    - Not consider the load of server, It like if the server is keep processing the past request then also it assign the request equal to the weight of the server. 
+
+  3. Ip hashing :- 
+   - Structure 
+     - LB
+     - Server : s1, s2, s3
+
+   - Yaha request ka Ip address ka hash value nikalte hai, aur server ki indexing hoti hai let say s1:0, s2:1, s3:2
+   - And iske hashvalue ke accoding ham server assign kar denge. (Let say internally Modulo algo and any algo can be apply here)
+
+   - Limitation :- Each user will always get the same server. 
+     - As we do not change the IP address of the client (not using VPN/proxy server). So if we send the request from our laptop then the IP of the laptop will not change then hashvalue value will also not change, then har baar hamko call same server par jayenge 
+      - Due to this it become the Tightly coupled(StateFul Architecture) with server. 
+  
+  Note : These are the static load balancer algorithum we have. 
+  

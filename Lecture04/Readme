@@ -171,6 +171,85 @@ Application of Load Balancer :-
    - Limitation :- Each user will always get the same server. 
      - As we do not change the IP address of the client (not using VPN/proxy server). So if we send the request from our laptop then the IP of the laptop will not change then hashvalue value will also not change, then har baar hamko call same server par jayenge 
       - Due to this it become the Tightly coupled(StateFul Architecture) with server. 
+    - Using the Ip Hashing means we want to use the Stateful Architecture.
   
   Note : These are the static load balancer algorithum we have. 
   
+2. Dynamic LB Algorithums :- Focus on the server's condition too
+ 1. Least Connection Method :- 
+  - Structure 
+     - LB
+     - Server : s1, s2, s3
+
+  - We know whenever client sends the request to the server it's call'S http calls. -> Http is stateless (Connection). Each Server makes the connection with its users.
+  - Least server connection state that, any server which has less no. of connection, LB sends the request that server. 
+   - Let's say s1:2, s2:4, s3:6  has the follwing connection, where connection means that that server has that no. parallely processing their request. 
+   - LB will distribute on the less no. of connection. 
+
+ 2. Weighted Least Connection :-
+  - Structure 
+     - LB
+     - Server : s1, s2, s3
+
+  - Connection : Ek user ne ek request bheja server1 ko, us request ko process karne time lagta hai, during this wo user, server ke sath connection banaya hoga. 
+  - Lets say we have the weight associated with the server are s1:1, s2:5, s3:10. And the active connection of servers are s1:3, s2:5, s3:4
+  - Load Balancer focused on two things 
+    1. No. of connections
+    2. Weight 
+
+    - And than Load-Balancer will find out the ratio as no. of conn/weight. 
+    - Jiska ratio kam aayega us server par request ko distribute kar dega.
+
+ 3. Least Response Time Method :- 
+  - Structure 
+     - LB
+     - Server : s1, s2, s3
+  
+  - To distribute the request on the different server it findout the response time. 
+  - Response time :- Agar koi user request karta hai, us request ko process karke response bhejne mai jitna time lagta hai usko Response time kahte hai. 
+  - The response time of the servers are s1:10ms, s2:11ms and s3:15ms.
+  - No. of active connection of the servers are s1:3, s2:4, s3:5.  
+  - Lest Reponse time find out one multiplication b/w no. of active connection * Response Time
+  - Jiska result minimum hoga us server ko request distribute ho jayega.
+  - Yaha calculation's LB karta hai.  
+
+4. Resources method :- 
+  - Structure 
+     - LB
+     - Server : s1, s2, s3
+
+  -  In this each server is associate with the agent. Agent is algorithum which run the server. 
+  - Agents is responsible for check up the health check of the server.  or agent works to check server is up/not? 
+   - And agent is also responsible for, at a particular moment what is the capacity or load in that server.
+  - Health Check : Ye barbar server se puchhta hai sab thik hai? So ye internally server ko call karte hai, and if res is 200 then it means ki server up hai.
+  - Agent is run on the backgraund thread. 
+
+  - Ab LB , will directly ask the agent about the server, on the basis of agent response LB sends the request to the server. 
+  - so How LB know that server is down :- If the agent stop response then LB understand that server is down. 
+   - If again server is up then the agent sends the request to the server that I am up now. 
+
+### Load Blanacer are further divided on the four parts based on for which layer it's works :- 
+1. Application level LB
+  - So LB will work on the application layer, basically on the http/https protocol. On the basis of this protocol it distribute the request. 
+2. Network Layer LB :
+  - Distribute the request on the basis of IP address. Because these LB has the access to the IP address. 
+3. Global Server LB (GEO_DNS)
+  - In the concept of datacenter we studied this, multiple data-center can exist on country level, On the country/wide based par request didtribute hoti hai.   
+4. DNS LB
+  - Simple DNS will act LB. Generally how DNS works like it have some request come to that it has url and ip section, then accordingly it sends the request. 
+   - We have deploy our application section on the basis of DNS: URL and IP address mapping.
+    -> If request come for specific url associated with Ip address then send to particular server. 
+
+### Types of server :- 
+1. Hardware Load Balancer 
+2. Software Load Balancer
+
+1. Hardware LB
+  - If having the proper hardware, which distribute load on the multiple server. This is called the Hardware LB.
+  - We can add it to our database center, internally LB toh ek server he hoga. So hld mai jo bhi pad rahe hai wo ek server hai like Web-server, DB-server, Cache-server, LB-server,etc
+  - So h/w LB ka kaam sirf ek he hai then ye GB of request ko handle kar sakta hai. So ye ek sath millions of request ko handle kar sakta hai. 
+  - Useful in the application which is big application, Intial cost toh lagta hai lakin wo badi se badi application ke liye request ko handle kar sakta hai. 
+
+2. Software based LB :- 
+  - We have a software in our server, which have Implemented Algorthums which we studied above. 
+  - Generally they are cloud-based, best to use is Amazon - Elastic Load Balnacer(ELB).

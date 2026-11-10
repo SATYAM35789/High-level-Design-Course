@@ -70,6 +70,13 @@ limitations :-
 
 - But this problem is not faced during the Modulo operator bases hashing because  modulo operator responsible for the hash's are distribute close to all DB.
 
+- Celebrity problem (hotspot key problem) :- 
+ - So lets say we are having instagram database server we designed below, which contains four database and each have two virtual nodes in the hashRing. 
+ - lets say we have account of the celebrity, key4 : SRK, Key5 : Virat Kohli and Key6 : Ronaldo, se when find the hash value of these, all three comes to the same database. 
+ - So our algorithum is equal for all the user's. If we put all the three in the same database then we know many of them like, comment, postvisit karte hai.
+ - So we have to fatch the data again and agaian, basically load incresed. So hamare pass toh key limited aayi but wo keys -> high qurry/ fetch wali keys aa gayai ki load bad gayi. -> This problem is called hotspot key problem. 
+ - virtual node ka concept is problem ko bhi solve kar deta hai. 
+
 -> So we need to have the good hashfunction so that we have the uniform distribution of the data/keys along the databases. 
 
 ## Virtual Nodes (Replicas of Orginal nodes) :- 
@@ -90,4 +97,9 @@ Vitual Node :-
 Note :- 
 1. Try to use the good hash function 
 2. Try to create more virtual node, so if the keys are nearer then also they got the different database. -> So the load distribution is low. 
+
+- Database badane se ham sharding bada rahe hai, replica's badane se ham replication bada rahe hai. Sharding karne se load kam kar rahe database ka. Replica's/virtualNode karne se same data original database aur uske aur bhi replica's mai hoga. 
+General Example : Ek kaam ham jisko char logo mai baat diya, single person ko 25 percent kaam karna hoga. Ek person ke baad two replica/ virtual node means single person two aur person ko hire kar liya to do same amount of work, lakin is tarah Main person ko jayda thaan nahi hua. 
+
+- Jis tarah ki application hai uske according ham database/servers ko introduced karte hai hamare server par. 
 

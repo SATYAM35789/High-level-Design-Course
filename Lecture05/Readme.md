@@ -71,3 +71,56 @@ How  to implement the rate limiting? To implement the rate-limiting we have diff
  2. Sends the response of 429 -> which means too many request. 
   - Second is the best way to discard the request so user got notified about their request. We can send some information about how many it can send the request, about duration,etc in the headers. 
   - So ye jo discard messages hai ye rate-limiter he kar raha hai, server involved nahi hai.    
+
+ ->3rd way :- Now we donot want to drop the request, we want to store the request and process the request when the server is free. 
+  - So we can store the request which we want to drop we put in the message queue. When the server is free then we give the request from the message queue to the server. 
+  - The high priority request will be go the message queue -> Server should have the intelligant logic to decide, to deal with request drop like want to sends 429 message , message queue,etc  
+
+### Algorithums of rate- limiting.
+1. Token Bucket
+2. Leaky Bucket
+3. Fixed Window Counter
+4. Sliding window log
+5. Sliding-window Counter
+
+- All these algorithun has its own advantages and disadvantages, and different algorithum uses algorithum on the basis of its own usescase. 
+
+1. Token Bucket :- 
+  - So we gave many request called as request pool, So these request are sends by the many clients and then we got these pool. 
+  - Middleware were algorithum, implemented. 
+  - Server exist, where we need to send the request for processing. 
+
+  - Structure :-
+    - Request Pool
+    - Middleware
+    - Server
+  
+  - Tokens based Algorithum state that we have one bucket, and we have tokens which comes to this bucket on fixed interval. 
+  - So the size of the bucket is fixed, lets bucket size is 3 then 3 tokens can come to this bucket.
+  - And we have Token builder which release the token in fixed interval to the bucket. Also called the frequency of the token.
+  - We have : Bucket Size : 3 , Inflow of token-builder : 2 token/sec
+  - So each second token-bulder releases 2 token to the Bucket. Till here we have seen what we have in the algorithum. 
+
+  Token Algorithum steps :- 
+   1. Token builder will push tokens in fixed interval
+   2. If bucket size is full then all the new tokens will be overthrown(overflow). 
+      - So if the bucket is full then the token generate in the next second will be overflowed/ droped from the bucket. 
+   3. Whenever a req comes it taken from the bucket if available and go to the server.
+   4. If bucket is empty, req is droped.  
+
+  - Used by the Amazon.
+  
+  Token Algorithum working :- 
+   - When we have any request, its takes the token from the bucket(if token available), and then rate-limiter allow that request to go the server. 
+   - Similarly another request will come and take token go to the server so on till token present in the bucket. 
+    Note:- All this happen in one sec as in another second we will have two token in our bucket. 
+  - If the bucket it empty then it would do -> three thing with request we have seen above. 
+
+Pros :-
+ 1. Simple to implement
+ 2. Can handle the burst traffic for small duration. 
+   Burst Traffic :- If server recives to many request then in this case, then starting mai jitna bucket ka size hoga utna request ko server ke pass bhej dega uske baad jitna uska inflow hai, means jitna capacity token per sec hone ka utna he request pass karega.
+   - so server ke according ham apne bucket aur inflow ko set kar sakte. 
+
+Cons :- 
+ 1. How to decide the bucket capaicity and inflow? -> Need for info about the server to decide. 

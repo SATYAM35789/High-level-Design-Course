@@ -210,5 +210,99 @@ How  to implement the rate limiting? To implement the rate-limiting we have diff
 
 5. Sliding window Counter Algorithum :- 
   -  It is the hybrid approch of above two.   
+  - So in the in sliding window we have to log the request and in the fixed window counter we are having the multiple request are handled together. So what if we we use the best of both. 
 
+  - 5 req/minute allowed -> we are using the fixed window req/vs time graph
+  - so here it uses the sliding window not fixed window. 
+  - So now if we have the requests at the edge of the time duration, -> all the request are come, which may come during this duration period i.e 5. 
+  - At the starting of the second duration if we got the some request then 
+    - If we use the fixed window counter then it will allowe the request as the request come in another duration and in duration (5 req/min) request alloed.
+    - If in this technique we use the rolling window. means jaha se first request start hua waha se abhi jo request aaya hai waha tak ek rolling window hoga.
+     - Rolling uses formula:- 
+       No. of req in prev interval + { No. in current interval * Request duration percentage of Previous duration or overlapping ratio(pahle wala duration kitna aa raha hai current duration mai)}
+
+       - Iska answer agar hamre no. of request allowed in duration se jayda hai then request ko drop kar dega. 
+
+#### Create our own rate limmitter :- 
+  - Which algo ti implement? 
+  --> Fixed window counter
+
+  - Where to store this counter on architecture level :-
+     expected Counter = 3
+     current counter = 0 
+     - jaise jaise value aayegi waise waise value incre / decre karte rahenge
+
+  - Why not store in DB? Why in Cache?
+     - Not in DB because it is slow. We donot want that rate-limiter query to DB again again which make it slow. 
+     - So we store in cache (best when use the In-memory cache : Radis)
+       - Radis is In-memory cache and the storing items are accessible very fast, easily.
+
+  - Where to implement Rate-Limiting? Server or Middleware
+
+Rate-limiter architecture :- 
+1. Client(-> rate-limiter)
+2. Server 
+3. Middleware (Rate-limiter implemented here)
+4. Radis (<- rate-limiter)
+5. Cache (<- rate-limiter)
+6. Workers 
+     1. between Db and Cache
+     2. between messaging queue and server
+7. Messaging queue
   
+- Flow of request? 
+  - Client sends the request to the rate-limitter and rate limiter decide what to do with the rate-limiter? To drop req or Sends to server.
+- To Decide to drop or sends to server on the basis of algo we using i.e fixed window counter. 
+- For each userId we will have the a fixed window counter. which we store in the Radis.
+
+- Now when request come to the rate-limiter then it asked the radis about the request that is this req should passed to server or should drop. 
+ - Where radis store the info about the counter say current counter is 2 and 3 req are allowed per minute then radis sends response (ok) to rate-limiter and update the conter. 
+
+
+After the complitation of the duration we want wo purane wale request ko remove karna hoga then we have again do counter = 0. So how can we do this Radis. 
+ Radis has a two function :- 
+  1. INCR : 
+  2. EXPIRE :
+
+  - so agar ham koi value radis mai dete hai then ham ye bhi fixed kar sakte hai ki expire kab hoga, lets say expire = 1 min , then 1 min baad value expire kar dega. 
+  - INCR : increse the value by one. 
+
+Rules stored in the database :- 
+ - like drop request, etc
+ - Lets say we stored the rules in DB, So firstly rate-limiter fetch the rules from the database. 
+ - New radis info ke rule ke basis par decesion lenge ki request ke sath kya karna hai.
+
+ - So if we use DB then rate-limiter will be slow-down then we have to introduced new cache 
+ - or we can store it in the radis so we know that Radis is In-memory, so it is vilatile memory. So it data got erase and then we have to load the rules again in the Rate-limiter. 
+
+ - We introduced cache, it works is to fetch the rules from the DB and and rate-limiter will communicate with this cache. 
+
+  Request flow
+  - Client request go the rate-limiter than it sends request to the radis to have the details about the current counter, then radis send the response to rate-limitter and then rate take the asked for the rules to the cache if the cache has the reules it response if cache has not rules then cache req to db and db response it back and the cache response to rate-limiter. 
+  - So if rules satisfied then it sends the request to the server if not then it drop the message. We can also send this request the messaging queue (Kafka) so if the server is free then we can send this req to the server. So we need to add one more workers between server and messaging queue -> jiska kaam hoga ki jab server free ho toh req ko server ke pass bhej do
+
+  Note :- Only High priority request will be send to the messaging queue.  
+
+Workers :-  Iska kaam hota hai ki time to time DB se rules ko fetch karke cache ko dena.For now can understand that workers is server which fetch the rules from the server and delivered it to the cache. 
+
+Summary :- 
+Request flow :
+ 1. Client sends the request to the rate-limitter
+ 2. Rate-limiter has four possible things to do with request :- 
+    1. Send it to the server
+    2. Drop the message
+    3. Return 429 message to the client
+    4. Store req in Messaging queue 
+ 3. What rate-limitter will do with req will depends on two things :- 
+    1. Rate limiting rules we decide
+    2. and the current counter value
+
+    - It will hot the rules from the cache and From where cache got the rules -> so then we introduced the server, which time to time fetch the rules from DB and send back to the Cache. (Time din mai ek baar or hafte mai ek baar)
+    - So if the rate-limiter got the rules then it ask to the radis for the counter and  where we radis do the 1 increment and send back to the rate-limitter
+
+4. On the basis of rules if we cannot give req to the server then we have three way :- 
+   1. Drop
+   2. 429
+   3. Message queue
+
+   - agar high priority queue hai then isko kaise req high-priority queue banti hai. Req ke header ek property bana sakte hai.  

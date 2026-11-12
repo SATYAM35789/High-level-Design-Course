@@ -85,15 +85,21 @@ How  to implement the rate limiting? To implement the rate-limiting we have diff
 
 - All these algorithun has its own advantages and disadvantages, and different algorithum uses algorithum on the basis of its own usescase. 
 
-1. Token Bucket :- 
+#### 1. Token Bucket Algorithum :- 
   - So we gave many request called as request pool, So these request are sends by the many clients and then we got these pool. 
   - Middleware were algorithum, implemented. 
   - Server exist, where we need to send the request for processing. 
 
-  - Structure :-
+  - Logical Structure :-
     - Request Pool
     - Middleware
     - Server
+  
+  - Structure :- 
+    - Request Pool
+    - Bucket
+    - Token Builder
+    - server
   
   - Tokens based Algorithum state that we have one bucket, and we have tokens which comes to this bucket on fixed interval. 
   - So the size of the bucket is fixed, lets bucket size is 3 then 3 tokens can come to this bucket.
@@ -116,11 +122,93 @@ How  to implement the rate limiting? To implement the rate-limiting we have diff
     Note:- All this happen in one sec as in another second we will have two token in our bucket. 
   - If the bucket it empty then it would do -> three thing with request we have seen above. 
 
-Pros :-
- 1. Simple to implement
- 2. Can handle the burst traffic for small duration. 
+ Pros :-
+  1. Simple to implement
+  2. Can handle the burst traffic for small duration. 
    Burst Traffic :- If server recives to many request then in this case, then starting mai jitna bucket ka size hoga utna request ko server ke pass bhej dega uske baad jitna uska inflow hai, means jitna capacity token per sec hone ka utna he request pass karega.
    - so server ke according ham apne bucket aur inflow ko set kar sakte. 
 
-Cons :- 
- 1. How to decide the bucket capaicity and inflow? -> Need for info about the server to decide. 
+ Cons :- 
+  1. How to decide the bucket capaicity and inflow? -> Need for info about the server to decide. 
+
+#### 2. Leaky Bucket Algorithum :- 
+  - Structure :- 
+    - Request Pool
+    - Bucket (logically a queue)
+    - server
+
+  - So this bucket has also some capacity lets say 5. 
+  - Here we have the outflow : 2 req/sec
+
+  Working :- 
+  - So whenever a any request comes then it goes to this queue. 
+  - And we have defined the outflow which bind the queue, the request will go to server, on the basis of outflow we defined. 
+   - So ek sec mai hamari queue se 2 request he jayega server tak.
+  - So agar bucket full hai then request drop ho jayegi -> to drop req we have three way to do so.  
+
+  - Burst traffic ko handle nahi karta, because hamare pass bahut saari request aa sakti hai lakin hamara server utna he request handle karega jitna uska outflow hai. So ye apne he speed se request ko handle karega ekk sath jayda logo ko handle kar ranho paa raha hai. 
+  - used by Shopify.  
+
+  Pros :- 
+   - Simple to implement.
+   - Even the burst traffic is there, our server will not crash. 
+
+  Cons :- 
+   - If DOS/DDOS happens, our server misses valuabale Request. (Main request got starve)
+
+  ##### Problems discussing for implementing:- 
+  1. Generally we do rate limiting on the user level or IP level, If rate limiting we do on global level then in this if any user sends the request it got full the size we decide for queue.
+   - So this is not good way to do, so we do the rate limiting on userID or Ip addressing based.
+   - If we do the rate-limiting on userId basis then we have to make that no of bucket. Because each id has its own bucket. -> So for both Token and Leaky bucket we have this problem. 
+   - Ip we do the Rate-limiting on IP level, it will become the more complex and we do ont when the IP will be hit (unable monitor), Every unqiue Ip ke we need to have the rate-limiting -> bucket.
+  
+  Note : So we know that token based algorthum can handle the Burst traffic, because ye utne request ko handle kar raha hai, jitna token hai, hamare pass. So the Alorithum which handle the burst traffic can also able to handle the DOS/DDOS attack.    
+
+  2. We know that in application we have many api lets say 100. So these api should have their own rate-limiting. So some od the api are simple and work internally and some uses the 3rd party application -> for which we have to give the cost. 
+  - So some times we have the API wise rate limiting. 
+  - This may also one way to distingush the rate-limiting. 
+
+#### 3. Fixed window Counter Algorithum
+ 1. In a fixed interval (say a sec, a minute), Only a specific no. of request can come. 
+ 2. Fixed Counter = 3. 
+ 3. Request more fixed counter in a particuar time will be dicard. 
+ 4. And we can handle more request in the next interval time. 
+
+ - So yaha no of request ko handling ko fixed kar diya gaya hai. 
+ - So isko samjhne ke liye we take as a global level and but we can do it on user and Ip level. 
+
+ - Cons :- 
+   - Are applicable where we do not got the burst traffic. So if interval khatam hone wala the tabhi hamne fixed counter itna request bhej diya, and next interval starting mai fixed counter itna request aa gaya then -> during this interval we have that no. of request which can not be handled by our server. 
+    - So ye counter ko fixed window rakhta hai, so for some time of interval we got the many request. 
+    - So on the edges(jaha ek interval khatam aur dusra start ho raha hai) chances of the server crash is more. 
+  Simply we can say: if burst traffic comes at the edges of window, it may lead to server crash/ high latency. 
+
+  Note : We define fixed counter, on the basis of server capacity to handle the request in the real-world. 
+
+#### Sliding window log algorithum :- 
+ - Best algorithum for Rate-limiting as it strict. and Drawback is that it is slow and memory consuming. 
+ - This alorithum work on the drawback of the Fixed window Counter Algorithum. So there we are having fixed time period, and at the edge we are having the double edges.  
+
+- In this algorithum, the length of the window is not fixed, it is sliding. 
+
+- Algorithum :- 
+  1. It will  store each request in a log fille.
+  2. Whenever a req comes, it will first remove all the outdated req from the file which comes in the previous duration of time.  
+  3. Then it will log the new req and chech if the counter limit reached then drop the request else send it to server. 
+
+ Working:- 
+  - say it will taking 3 req/min.
+  - Then if request comes at (00:01) at first sec of the time duration we have. During this our algo allow the request to go the server.
+   - Now we If another req comes at 00:30, So we are having request on 30th sec So we check that ki hamare file koi bhi outdated request hai kya, so this is not as first req comes at 1 sec and this will at 30. 
+   - If another request comes to the 00:59 sec par then it will allow this to the server. 
+   - If another request come at 01:02 then 00:01 request become the outdated. 
+   - If another request come to the 01:04 then request come to the window during when req got log in the file it also check the no of request if it exceed then jo abhi request aaya tha usko drop kar dega. 
+
+   - It uses the sliding window technique we have learnt in the DSA. 
+  
+  - So memory consumming because we are log every request, then our log file size is increased, then memory uses will increased. And it slow beacuse it check for the outdated request and and then no of request count. Then sends to the server or drop the request.  
+
+5. Sliding window Counter Algorithum :- 
+  -  It is the hybrid approch of above two.   
+
+  

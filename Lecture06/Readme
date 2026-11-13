@@ -1,0 +1,77 @@
+Today topic :- 
+1. Architecture design of URL shortner (Bit.ly)
+
+### URL shortner 
+- URL shortner like bit.ly which takes the URL and return the shorter size of the URL. Ex
+www.example.com/add/user/userId=3&userName=Aditya -> www.bitly/qwd12
+- UseCase of this service :- where we have words constraints for the url, so when the user click this url www.bitly/qwd12 the he internally clone to this url www.example.com/add/user/userId=3&userName=Aditya.
+
+- So we will be learning this lecture as Interview based. So HLD interview is always open Ended Question -> expected to ask the question and minimized the constraints. 
+
+### What would be the basic solution or What will our service will be doing? 
+1. First thing that our url Shortner will be doing?
+ - It has the long url.
+ - Then this url is passed to our service where design that how the Long url will be converted into Short Url. 
+ - After this, We got the short url.
+
+2. Second thing that our url Shortner will be doing?
+ - When we click on the short url 
+ - Then the broswer will redirect to the long url
+
+### Questioning more for the requirement gathering. 
+
+1. How many people we are targeting?
+ - So let's we have asked that our shortner should be able to generate 20 millions URL a day.
+
+2. Example for generating short URL. 
+ - Long URL : www.example.com/add/user/userId=3&userName=Aditya  Convert to www.bitly/qwd12.
+
+3. How small the short url would be? 
+ - As short as possible , so this type of question is not have any exact answer like 5,4,6 etc (the letter after our company name like www.bitly/qwd12 has 5 character(qwd12)) 
+
+4. What characters I can use to create a short URL? 
+ - Lets say we got to use charaters are 0-9 , a-z, A-Z. 
+
+Flow Discussion -> For the ourselves and for the client/interviewer
+ 1. User comes to our service by giving us a long url
+ 2. We will give him back a short URL
+ 3. User put this short url on the broswer and is redirected to LongURl
+
+ 2 task :- 
+ 1. sort url generation
+ 2. user redirect
+
+ - So we have created the task on the basis of Flow we discussed. 
+
+5. Back of the envelope calculations ? 
+ - To find idea of scale of your application -> About all coming request on server, query per second ? and storage unit? will be calculated. 
+ - So no Interviwer will be directly asking for the Back of the envelope calculations, we should analyze by ourselves. 
+  
+  QPS? 
+   - 20 million URL generated per day -> If the service will be generating amount of url then it must be storing this Information daily.  So we have 20 millions call then 20 millions time our database have been Qurried. 
+   
+   Write Operations  : 20 millions per day 
+    Write operation per second : 
+     - 20 * 2^20 / 86400 = 231.48 * 10^-6 * 2^20 (changing 10^-6 into this 2^20 )
+     - 231 * 2^-20 * 2^20 
+     - ~ 231 operations/second
+
+   Read Opertaions : 
+   - Generally agar ek baar shor uel generate ho jaaye then uske bahut saare application like storing in some where, or share with some where -> Read opertions bahaut baar ho sakte hai. 
+   - So jitni baar bhi us short url par koi click karega utani baar hamare service mai read query aayegi. 
+   - Let's take ratio which represent write:Read like 1 : 10  it means ki 10 times jayda read operation ho raha then write operation. 
+    Read Operations/sec = WQPS * 10 = 231 * 10 = 2310/sec
+
+   Storage Unit :- 
+   - We take the assumption about how long this service will be running. So we ssuming for the 5 years :- 
+    - 20 millions URL daily
+    - 20 millions * 365 days * 5 years
+    - 36500 millions(2^20) records
+    - 36.5 * 10^3 * 2^20 records
+    - 36.5 * 2^10 * 2^20 records (10^3 = 2^10)
+    - 36.5 * 2^30 = 36.5 billions
+
+   - Assume 1 record = 100 byte
+   - 35.5 Billion * 100 byte
+   - 36.5 * 2^30 * 0.1*10^3 -> 36.5 * 2^30 * 2^10 -> 3.65 * 2^40 -> 3.65 TeraByte Approx
+

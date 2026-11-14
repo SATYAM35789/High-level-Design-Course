@@ -140,4 +140,57 @@ Flow Discussion -> For the ourselves and for the client/interviewer
 
    -> If we asked and give this resoning for the status code to interviewer answered to use the 302 status code. 
 
-## Design an Initial Flow :-  
+## Design an Initial Flow :- 
+1. Task we have to do
+   - Url Shortening (Post) 
+   - Url Redirecting (GET)
+
+2. URL shorteninng 
+  - Sabse pahle user hamko ek url dega by doing the post call:- 
+    POST : www.bit.ly/api/v1/generate
+    Body : {longURL}
+
+    return shortURL
+
+    - Post call will be processed by the service/server which will return the short uel. 
+
+    - So we understand that we need the mapping : longUrl --> ShortUrl
+    - So when the user hit the service with longurl then we generate the shot url, and we store in our database and then return that short url to client. 
+    conclusion : LongURL --> Mapped to -->ShortURL
+    - So we come to the DSA background then we Hash Map / Hash table in our mind. We store the key:Short URL and Value:LongUrl
+    - Now when client come to our service with short Url then we redirect it. Then we go the hash table -> where we have key on the basis of short URL and we return this key value from our DB. 
+
+    How to generate short URL from Long Url? 
+    - We have discussed about the hash function which convert any string,alphanumeric,etc to the hashcode. 
+    - So we take LongURl and apply HashFunction on it and Convert it to the short url i.e long URL --> Hash Function --> Short Url
+    - We have different hash functions algorithums we would studied in the cryptoGraphy like SHA-1,MD5,SHA-256, etc. And we assumpt that Hash Function will be always generate a hash-value. 
+    - Hash map/ Hash Table :- kEY section and Value section.
+      - Key section have the Short URL
+      - value section has Long Url 
+
+    Storing Flow :- 
+     - User comes with a long url
+     - we generate a short url for the same using hash function
+     - Store the shortUrl as key and LongUrl as value in our hash map 
+     - Return the short url
+
+    Redirecting :- 
+    1. User comes with a short URL
+    2. We find find the equivalent longURL by doing map.get(shortUrl)
+    3. Redirect the user to longUrl (302 redirect)
+
+So here we have completed the intial flow. Now we should have more question our mind i.e 
+
+1. We say we use the HashMap but has map will be in our application, it is not DB? Then when the application will restart agin then we loose all the data. So we need to store this value in any Database.
+- Best DataBase for the HashMap is any Nosql type lets take the Amazon Dynamo because it store simple key-value Database. 
+
+2. Any application we discussed in the HLD is Distributed Application. So in the Distributed Application we have Multiple servers and Multiple Database Servers were exist.
+ - Multiple Database Servers means we have DB replication and Scaling -> Horizontal(Sharding). So we are not directly having 20 millions user. 5 million -> then 10 million then 20 million. So we need to use Consistant Hashing. 
+ - Now we have to hash function :- 
+   1. Find out the shard (SH1A-1) -> Kis Db mai value store hogi
+   2. Find out the  shortURl from the Long Url (MD5)
+
+Till here, the interviewer almost got satisfied. We can finished here move to the architectural design but let move one more level.   
+
+## Better Design 
+

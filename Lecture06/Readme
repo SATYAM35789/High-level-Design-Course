@@ -75,3 +75,69 @@ Flow Discussion -> For the ourselves and for the client/interviewer
    - 35.5 Billion * 100 byte
    - 36.5 * 2^30 * 0.1*10^3 -> 36.5 * 2^30 * 2^10 -> 3.65 * 2^40 -> 3.65 TeraByte Approx
 
+## Steps we would take to do architectural design of the application.
+- Client :- A client should exist who request/interacts with the service.
+- service/server :- Service which process the request and returns the response. 
+- So we are saying that client-server are communicating/interacting with each other, How they interacting, using some Api End point.So we need to discribe that which of the api are uses and what are they doing in the service :- 
+ 1. Generate a short URL
+ 2. Redirect to long URL
+
+ - So we need to make two api and their work is mentioned above.
+
+### Dicussing api end point 
+1. Generate a short URL :- 
+  - So firstly user have the post req  
+  How the long URL has been given to server? 
+  1. qurey parameter : In key value format like longUrl : value -> are the long url 
+    - main url : post : www.bit.ly/api/v1/generate
+    - QP : key-value
+  2. url ke through de sakta hai : req : www.bit.ly/api/v1/generate/{{longUrl}}
+  3. body : json format mai de sakte hai
+      - post : www.bit.ly/api/v1/generate
+      - body: { }
+
+  - url ke through :- Very bad way to give the LongURL because every broswer has some limts -> If hit the limit then this API will not run on the broswer. 
+  - qurey parameter is better then the above method In this main api will be small and Query parameter mai badi value aa sakti hai. -> Here to we can reach the limit. 
+
+  - The best way to do post call is passing through Body. 
+    1. Call the api
+    2. And pass the long url in the body
+
+  - #### 1. Generate a short URL : 
+    POST : www.bit.ly/api/v1/generate
+    Body : {longURL}
+
+    return shortURL
+
+2. Redirect to Long URL:- 
+  - Here user, put these short url on the broswer then it do the get call
+    GET : www.bit.ly/{{shortUrl}}
+  -  and the we have to redirect to longUrl
+
+  - #### Redirect to Long URL : 
+    GET : GET : www.bit.ly/{{shortUrl}}
+    reponse : Redirect to long URL
+
+
+2. How to Redirect the LongUrl? 
+  - We have the short Url, and we browse it on google
+  - Then behind the seen this URL go to the Our-service that is bit.ly
+  - Then this service will be asked to database for the Long Url
+  - Then DB response back to the service 
+  - Then service return its response back to broswer/client, 
+    - We do not want that our service will just response back to client we want to redirect this url. For this we use status 301 and 302. 
+
+  - Both 301 and 302, status code are responsible for the redirection. So if we have this code then our broswer understand that we have to just redirect the URL. 
+   - 301 : Permanenet Redirection :- Broswer understand that the short url is permanently moves to this longUrl. Then Broswer store this LongUrl to the Cache. Now if we click on the shorturl then it will directly uses the Long-Url. -> Client-side Caching ho gaya.
+   - 302 : Temporary redirection. Then Broswer understand that we wnating that whenever any client click this ShortURl then it internally comes to our website then we process the ShortDB and return back to the Broswer and then redirection ho. 
+
+   How do we decide to use status code between 301 and 302?
+   - If use 301 then user will never come to our service again if the broswer caching is done. Without our service Interferance. It will be good when server is small and we want that to minimize the DB Read Query. So when our application is small and not that optimized. 
+    - Disadvantage :- We will never know that how much UserBase uses our website-> we have not any metric system to measure. 
+
+   - If use the 302 then user first come to our service and then we redirect. We do this when server is scalable and the DB Read Query is Optimized. 
+   Advantage : We can have the User Matrics. 
+
+   -> If we asked and give this resoning for the status code to interviewer answered to use the 302 status code. 
+
+## Design an Initial Flow :-  

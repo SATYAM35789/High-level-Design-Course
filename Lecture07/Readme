@@ -126,3 +126,36 @@ So What API should we have so that we can have run our notification system.
 
 ## Basic Design Dicussion
 - We were giving the desgin to interviewer of all design we have. 
+1. The push notificaton are go on the mobile application, if mobile is IOS(Apple) device then Apple provide a service i.e APNs (Apple Push Notifications) --> It is the 3rd party application if you want to send the notification on Apple devices.
+ -> Similarly we have the FCM (Firebase Cloud Messaging) for android devices. So if we want send push notification on the Android device then we have to use this service.  
+
+ Generally we have to understand that when we want send notification on Apple device then we have not control of the operting system of the Apple device phone. So the OS contol of the IOS device is to IOS. So the IOS give us the service APN -> so we send the notification here and it sends to the device. 
+
+2. So when we do sms notification then also we can send to 3rd party services are exist there like Twilio, nexmo, etc
+
+3. Similarly for the email notofication we have 3rd party application/services like MailChimp, sendgrid,etc. 
+
+- So we want to use this 3rd party application, So How can we use this?
+ structure :- 
+ 1. service : service1, service2, service3 
+  - These are services which responsible to send the notification to the notification server.
+ 2. Notification server : Responsible for interacting the different 3rd party application.
+ 3. 3rd Party Application : APNs, FCM, Twilio, MailChimp
+    - And this 3rd party application further send the notification to a client. 
+  4. Client : client1, client2, client3, etc.
+
+
+  What are these services? 
+  - Services may be the microservices like suppose if we integrating to Amazon, usme :-
+    - ek user kart jo notification bhejti ho
+    - ek order service jo notification bhejti ho
+    - ek payment gate ho jo notification bhejti ho 
+  - These are different microservices
+
+  - It may be the Cron-jobs :- 
+    - Cron-jobs : Scheduled API/task are called the Cron-jobs. So if we once write the Scheduled API and we also defined duration ki, hamari api/methods kab chalgi.  
+
+  Flow :- 
+  1. Any service (Microservice,cronjobs) trigger notifications and send it to our notification server. 
+  2. The Notification server has some APIs that builds up the payload for thied party application/services/API to send the reuested Notification. 
+  3. Third party service actually send the notification to the client. 

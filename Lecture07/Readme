@@ -86,4 +86,43 @@ Bandwidth(in sec, how many data is transfered) : 10 million * 1 kb/86400
  - (10*2^20*1*2^10)/ (86.4*2^10)
  - 0.115*2^20 = 115*10^-3*2^20 = 115 * 2^-10*2^20 = 115*2^10 = 115 kb/sec (Include inflow and outflow of request)
 
-- If our server is not capable of doing the 115 kb of data transfer per second then we need server scaling. Or need to scalr Ram if we do the vertical scaling.  
+- If our server is not capable of doing the 115 kb of data transfer per second then we need server scaling. Or need to scalr Ram if we do the vertical scaling. 
+
+### API Interactions :- 
+- Notification service 
+- Service(client1) 
+
+So What API should we have so that we can have run our notification system.
+- We know that our notification service is not work by itself , we must have some application like Swiggy where which concated our service. So the notifcation is farwarded to anyuser so we must have userID. 
+- So we let that the application which uses our service, what type of database the application have it must store the user info. 
+ - So lets say application uses SQL and it have table which attributes are userId, Name, Mobile... --> This already implemented we let this. 
+
+1. Api: To retrieve user information
+- Internally Notification service will search for user details like userID to send, if wants to send the sms then mobile no, if email then emailID,etc So for this we need this api. It is possible that we got the details from the same service or we got from another service. 
+
+  To fetch the user details notification Service make the Get call
+  - Get : /fetchUser/{{UserID}}
+  - Response :- We would be having the 200 ok response and have the user json which includes userId, userName, notification Permissions which may also includes : push , email,sms,etc
+
+2. Api : To send the 
+   - Post req: {{baseUrl}}/sendNotification/{{userID}}
+   - So if post then we need a Body. 
+     Body : {from,to,subject,content,type}
+
+    Response : 
+     - 200 ok
+     - Body {"status" : "sent", "notificationId":" "}
+
+3. To fetch notification history (Optional) 
+- Get: /fetchALLNotifications    
+  - We can also give the some QueryParams to filter -> Kis date se kis date tak lani hai, Type,etc
+
+- Response 
+  - Ok 200
+  - And Array which have the different notification objects. like 
+   [ {"status" : "sent", content : ""},{"status" : "sent", content : ""}]
+
+-> We can make more api, based on the more operation we want to do. 
+
+## Basic Design Dicussion
+- We were giving the desgin to interviewer of all design we have. 

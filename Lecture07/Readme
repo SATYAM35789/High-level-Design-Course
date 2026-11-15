@@ -1,0 +1,33 @@
+## Notification System Introduction
+- So we have different application in our mobile phones like instagram, Swiggy, whatsapp, etc where we are integrate this notification system. 
+- In LLD we have discussed the notification system there.  In LLD we see how notification system work on the Low level. In HLD we will see how on the network level when user increses then How we manage and what we introduced. 
+
+## Requirement Gathering :- 
+- In these what ever the project we have assigned, we need to list down requirement so that you and Interviewer come on the same page. 
+
+### What are the type of notifications?
+- Push application -> mobile ke upper jo bhi notification aati hai. 
+- SMS Notification like OTP,etc
+- Email Notification
+
+### Real time System vs Soft Real time system 
+- Real time system : A system in which a changes occured , is frequently(ek dam se) reflect to user. -> In the notification appplication the real time system means when the notification created we imediately sends the notification to user. Without taking any time or without buffer. 
+- Soft time system :-  We try  to send notification as soon as possible. 
+  - There can be exception
+  - system is down
+  - server is busy
+  
+  Due to these some reason we unable to send the notification at the time of notification generation. 
+
+- The practical application which exist will nit work on the Real-time system -> Notification is not that important like if some one sends you the follow request then it is not necessary that to send immediately. So we use these Soft time system so that we donot loss the info when server is free then send. In real-time system we say send this notification first then do your current work. 
+
+### How the sysytem is Real time/ Soft Real Time
+- Soft real time
+
+### Device support type ? 
+- IOS, Andoried, Web-application-> like window/macos par koi website login kiya then usko bhi notification mil jaaye. 
+
+Now we have covered our requirement for now -> these are enough. 
+  
+### Core Entities :- 
+- 

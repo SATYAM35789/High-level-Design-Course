@@ -9,6 +9,7 @@
 - Push application -> mobile ke upper jo bhi notification aati hai. 
 - SMS Notification like OTP,etc
 - Email Notification
+- In-App Notification (Real-time system ex)
 
 ### Real time System vs Soft Real time system 
 - Real time system : A system in which a changes occured , is frequently(ek dam se) reflect to user. -> In the notification appplication the real time system means when the notification created we imediately sends the notification to user. Without taking any time or without buffer. 
@@ -30,4 +31,59 @@
 Now we have covered our requirement for now -> these are enough. 
   
 ### Core Entities :- 
-- 
+- Client1/service :- It is responsible for sending the notification to the notification sysytem. Don't got confuse as broswer client, In the microservice sysytem when one service try to comunicate with another service then one become client and another one become the server.  
+- Nitification Server/Service: It accept the request from the client. And this dervice responsible for :- 
+ - creating a notification 
+ - payload defined karna when we are sending the notification to the server then we do API.
+ - Templates
+- Executer : Notification service will be interacting with Executer. And responsible for actulally sending the notification over the internet. Different type of notification ko ham yahai handle karenge. 
+- Client2 : Executer will be sending the notification to client2. This may be the broswer, any other application. 
+
+Our work is to understand how actually this service is, what happend in the particular service. Basically we go in the detailing of each of the service in the HLD. 
+
+### Back of the Envelope calculations
+We do :- 
+ - QPS -> find by yourself based on your own assumptions
+ - Storage Unit 
+ - Bandwidth Calculations
+
+- Assumptions : 
+So our notification system is Independant application/service used by the different application like swiggy,etc
+- Daily active user : 1 million
+- So how many notifications are to be sent  -> 1 user = 10 notifications. 
+  then total notification = 1 million * 10 = 10 million
+
+- Storage Unit : 
+1 notifucation = 200 bytes (content, template->timestamp,userID, NotificationId etc)
+total notification storage for a day = 10 million * 200 Byte
+ - 10*2^20*0.2*10^3
+ - 10*2^20*0.2*2^10
+ - 2*2^30
+ = 2 GB per day storage.
+
+Notification we store for 1 month, we donot need to store for many days on a server. We are having the back-up for 1 month. We may also ask to the Interviewer about Is he want to store the notification for 5 years or for some days. 
+  -  Notification we store for 1 month = 2GB * 30 days = 60 GB
+
+Bandwidth Calculations :- 
+- Understanding Bandwidth :- Lets say two microservices are interacting like MS1 and MS2 are doing the HTTP calls. The maximum amount of that can be transmitted in a given period of time. Like if time is 5 minute then how how many maximum data can be transfered from MS1 to MS2.So hamare server kisi given time par kitna data transfer kar pa raha hai.
+
+- Bandwidth resposible to find the How busy our server will be? So if we know that we are having the 1 million active user on our server then How busy our server is. In a sec how many calls are comming and have their response. 
+
+- Estimate and also tell about How big our server should be? 
+  -> So we do horizontal scalling when load is much. 
+So let's take the MS1-> service/client1 and MS2 -> notification system :-  
+- Notification system :- Over the internet calls which done through the Rest Api-> where the payload will be created.
+ - Notification payload : 1 kb (Average of upload and Download) -> includes headers,Body,request parameters,etc.
+- Daily active User = 1 million
+- Total Notification/day = 10 million
+
+- So total data transfers -> 1 KB * 10 million
+  - 1*2^10*10*2^20
+  - 10 * 2^30
+  - 10 GB/day -> of data are transfered in a day, included incoming(upload) and outgoing(download).
+
+Bandwidth(in sec, how many data is transfered) : 10 million * 1 kb/86400
+ - (10*2^20*1*2^10)/ (86.4*2^10)
+ - 0.115*2^20 = 115*10^-3*2^20 = 115 * 2^-10*2^20 = 115*2^10 = 115 kb/sec (Include inflow and outflow of request)
+
+- If our server is not capable of doing the 115 kb of data transfer per second then we need server scaling. Or need to scalr Ram if we do the vertical scaling.  

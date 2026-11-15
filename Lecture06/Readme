@@ -248,3 +248,62 @@ What hash function we need to use??
     - If no the save/store this in tha database. 
 
     Disadvantage of this approch :- 
+    - DB hits increases. So we have been asked to have 20 million urls in 1 daya day, and there is 10x read operation done on a day, to generate if we aske more doing recursive call then How many call's would be there. 
+    - Slow becasue of recursive call. 
+
+   ### Base X Approch :- 
+   - Like we have converting the Base10 --> Base2 (decimal to Binary). 
+   - So we are having 62 character So if Number Base 10 -> Base62
+
+   How we are doing this conversion :- 
+   - we have 62 possible Numers (0-9,a-z,A-Z). Then we do the mapping like this 0-0,1-1, .. 9-9,a-10,b-11, .. z-35, A-36, ... Z-61.
+
+   - Convert 14320 into Base 62 
+     - Then we 62 se 14320 ko divide kar, jisme quotient ko next division karne ke liye and remainder ko side mai, jaise ham normally LCM nikalte hai.
+     - Jab tak zero n aa jaye tab tak calculation karte jaate hai. 
+     - Then result ko niche se uppar ke firection mai note karte hai.
+     - Lets we got 3(44)(60) - encoding -> 3IY
+
+  How will use above calculation in our approch :- 
+  - We are having the SQL database have three col i.e Id | Short URL |Long URL
+  - Now lets say we have Id= 14320 and have the corresponding short URL and Lonf url. 
+  - Now For the short Url we will find base 62 of the Id i.e 14320 -> we got 3IY-> store it in short url. and long url is www.example.com.
+   - Long url : www.example.com
+   - Short url : www.bit.ly/3IY
+
+   --> So we have find the Short Url on the basis Id using Base 62 conversion. 
+
+  Advantage :- Collision Not Possible because we are having the Unique ID evert time as it is primary key or ID would be never repeat again. And then base 61 of the two Id will never be same as ID are different always.
+
+  Disadvabtage :- 
+  1. We need a Unique Id generator. Easily to generate. 
+  2. And the Url length is not fixed. 
+  3. It is easy to figure out the next generated short url. (If id is increment by 1)
+
+  We ca Ignore this disadvantage as they are easyly soluable or managed. 
+
+Now understanding the flow of the architecture till now we were doing :- 
+- Long url : https://www.example.com/get/code/userId-3353 
+- And when any one come/hit with this url to our service then our service Firstly genertate the unique ID lets says Generated Unique ID is 14320. 
+- We will generate the short Url using this unique ID by finding the base 62 of the Id which is 3IY. 
+- Then we stored the data in the DB as we discussed above. 
+Note : Ham kisi bhi parameter ke basis par query kar sakte hai based on how good is our indexing. 
+
+We need to build a unique ID generator -> We cannot use the Database Unique ID generatoe which DB do by default as we are in Distributed System. Because we have the multiple shard exist there -> So the shards may generate the same value of ID. 
+ -> We need to have Centralized Unique Generator. 
+
+Atchitecture of Syoring:- 
+- Client (->LB) -> Post Call of Longurl
+- LB (->Servers)
+- Servers (->DB and Cache)
+- DB
+- Cache
+
+Architecture of Redirection :- 
+- Client (->LB) -> Get Call of shorturl
+- LB (->Servers)
+- Servers (->DB and Cache)
+- DB (return the long url to server and client return to client with 302 then it redirect to long url)
+- Cache
+
+--> We can also discusses about rate-limter and consistant hashing

@@ -159,3 +159,78 @@ So What API should we have so that we can have run our notification system.
   1. Any service (Microservice,cronjobs) trigger notifications and send it to our notification server. 
   2. The Notification server has some APIs that builds up the payload for thied party application/services/API to send the reuested Notification. 
   3. Third party service actually send the notification to the client. 
+
+  We are having the different services provider, cannot we directly used the services without using the centralized server? -> No we have different reason for that :- 
+   1. Tightly coupled :- So if services directly Erd party application se link ho gayi then change in any logic in the 3rd party application, would need to change in our services. So we need central hub for sending the notification. 
+
+Problems/ Issues with Intial design :- 
+1. SPOF (Single point of failure) : So if our Notification server failed then whole, system got affected. 
+ - Notification system has not its own database, means it must be storing in the service or used 3rd party database. So we need to add the Cache and Database.
+
+2. Hard to scale
+3. Retry mechanism missing.
+4. Tight Coupling (Synchronous)
+  - Lets say service 1 has send the push notification to the Notification service, so it start creating through format. So at the time creating we got the notification request from the service2 and service3 then it these request should wait till we got the response from the service1. -> So it is slow. So we need to shift from synchronous to Asynchronous. 
+  - In asynchronus, notification server sends the request to the queue and the 3rd party application execute accordingly on their spped. So jaldi request ko pass kar paayega, doing this our notification service and 3rd party application become Indepandant and they can able work on their own speed. 
+
+Note : So agar hamre application mai kisi bhi point agar speed slow due to many reasons like synchronous then we need to add the messaging queue at that point, so the services become Indepandant. And we can also do caching.
+
+## Better Design:- 
+structure :- 
+ 1. service : service1, service2, service3 
+  - These are services which responsible to send the notification to the notification server.
+ 2. Notification server : Responsible for interacting the different 3rd party application.
+ 3. 3rd Party Application : APNs, FCM, Twilio, MailChimp
+    - And this 3rd party application further send the notification to a client. 
+ 4. Client : client1, client2, client3, etc.
+ 5. Caching : Notification server reqest for the logs,recently used data,etc
+ 6. Notification DB : Notification server store the data here.
+ 7. Messaging queue : It like normal queue where we have producer and Consumer Concept. So we need to add the 4 queue as we have 4 3rd party application we have.
+ 8. Workers :- We need to have worker for each message queue.
+ 9. Retry mechanism :- So if worker is unable to send the notification to 3rd party application due to some reason then we send the notification back to the Message queue for try again.  
+
+- Added Db and Caching : So now our notification service has its own cach and DB so Notification service do not need to call API -> It's take the data from its own database. 
+
+- Solved tight coupling Problem:- So we discussed the problem of tight coupling so we need to introduced the messaging queue. So notification server is create the notification fastly and give to these messaging queue,(notification server acts like publicer), when the message entered in the message queue notification reponse for 200 ok message to service.
+ - We would be thinking that 3rd party application ko workers maan lete hai, but not because 3rd party application ka application hamare pass nahi hai, so we just call them. So we need to create own workers( workers act like consumer). 
+- Workers are responsible to the request from the message queue and give to the 3rd party application. Workers are not radis, it is a server which work we discussed above. 
+
+- Removing SPOF :-  Horizontal scaling also done here. 
+- We also let that we cache and DB are scaled. And we have also LB,etc which we have learnt in the 0 to millions of scaling. 
+
+Solving the Retry Mechanism :- 
+ Problem :- Suppose service1 want to send the notification then noftification server use the template from the db and create the notification and add to the messaging queue, And the notification wait in the messageing queue for the worker to pick. For unknown reason when the worker try to send the notification to 3rd party application it failed/crashed. Then if it crashed then workers discard and take another notification for processing. Notification got discard before reaching the client. So our system is Not reliable. Koi bhi notification miss na ho. -> So we try to use the retry mechanism. 
+
+Solution : Introducing the retry mechanism :- 
+- Wokers we are having so if we unable to send the notification to 3rd party application then we seen back to the Message Queue again to send to 3rd party application agian. 
+
+Cache and DB : stores the info related to User Info, Notification templates,etc It ovieous that first we try to fetch the deatils from the cache If not present then we go to the Database.
+
+Messageing Queue : Removed depenedency b/w 3rd party APIs and Notification servers. Service is Asynchrous now. 
+
+## Final Improvement that can be done our latest design :- 
+Weaknesses and Solution :- 
+ 1. Notification Templates -> storing DB
+ 2. Notification setting on user level : user can turn on/off a particular type of notification. -> So we need to qurry in cache and DB to check weather we the user turn off this type of notification or not. 
+ 3. Rate-Limiting :- Introduced kar sakte hai
+ 4. Api authentication: Any one can call the API we can add the authentication to the api we created. 
+ 5. Monitoring Logic :- 
+   - So lets if we problem to find the different type notification we passes in a Day, How many notification got failed/passed,etc
+ 6. Notification log ko introduce kar sakte to store the notification. 
+
+ Final Design :- 
+ structure :- 
+ 1. service : service1, service2, service3 
+  - These are services which responsible to send the notification to the notification server.
+ 2. Notification server : Responsible for interacting the different 3rd party application.And we are assuming that these server is scaled internally. 
+ 3. 3rd Party Application : APNs, FCM, Twilio, MailChimp
+    - And this 3rd party application further send the notification to a client. 
+ 4. Client : client1, client2, client3, etc.
+ 5. Caching : Notification server reqest for the logs,recently used data,etc
+ 6. Notification DB : Notification server store the data here.
+ 7. Messaging queue : It like normal queue where we have producer and Consumer Concept. So we need to add the 4 queue as we have 4 3rd party application we have.
+ 8. Workers :- We need to have worker for each message queue.
+ 9. Retry mechanism :- So if worker is unable to send the notification to 3rd party application due to some reason then we send the notification back to the Message queue for try again.  
+ 10. Rate-limiting and Authentication are intoduced in notification service because we wanting. 
+ 11. DB (Notification DB): Worker should have this db which store the notification log. 
+ 12. Analytic service :- Responsible for interacting with notification service, messaging queue, Notification DB and 3rd party application -> sabse interact karti hai, for monitoring. 

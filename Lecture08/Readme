@@ -63,3 +63,41 @@ So if is amount mai data kisi bhi type of Database mai daal raha hoga toh koi bh
 - So if we have the application for the world or cuntry level Lets say on any DB we wil getting very high load. To solve this issue we have the message queues.
 
 ### How the message queue like Kafka will be solving the above dicussed issue? 
+- Structure :- 
+  - GPS : Driver vehicle will share live location. 1 lakh request/sec. 
+  - Ola Server
+  - Client
+  - DB : Server insert request
+
+- Every database that exist will not have such a high throughput. So itna load koi bhi database nahi le sakta hai. 
+
+So we have device which have such very high throughput i.e is Kafka. So now when the Ola server try to put the the request to the Database, now we put the Kafka between the Server and DB. 
+ - Now Ola server request the Kafka (kafka server has very high throughput)
+ - Now DB will try to consume this request from the kafka server
+ - So DB not consume the  request directly from kafka server, so it has worker which will do this work
+
+Flow :- 
+ - Ola server works as producer here, becacuse Ola server try to push many request together. 
+ - workers are consumers which take the request one by one from the kafka server and and then if some of request are come to the workers then they do Bulk push on the DB. So we can set a timer of the bulk push, ki itne minute baad push karo. 
+
+Note :- We always minimize the hit of the DB. 
+
+DB server :- Its only work is to take a request and give the Database whereas webserver general work is to take the request from client process the request and Put the data in DB. -> Easily scalable then Db server as we can use load-balancer,etc
+
+## Kafka
+Why it is Useful?
+ - Pace matching : We have discussed above that agar ek service request fast send kar raha hai aur ek service slow hai, means utna fast request handle nahi kar sakta then we can use Kafka. -> related to storing
+ - Async Communication : So When a service request service and expect response so it can do its work, here to we can use we can send our request to kafka and from their consumer take the request and process the request, notify or generate the event to tell the service that processes data is ready. 
+ 
+### Indepth Architecture of Kafka
+Terms we will use :- 
+1. Cluster
+2. Broker 
+3. Topic
+4. Partition
+5. Offset
+6. Zookeeper
+7. Consumer
+8. Consumer Group
+9. Producer
+

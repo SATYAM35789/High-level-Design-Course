@@ -101,3 +101,61 @@ Terms we will use :-
 8. Consumer Group
 9. Producer
 
+- The basic architecture we will bw having. We have a producer and consumer. So producer and consumer want to interact with each other, it can directly interact with each other so if do this they become synchronized, if they are Asynchronous then there may be the problem of pace matching. 
+- So the soulution of this messaging queue, we introduced the messaging queue, which is kafka server/ Broker. -> Kafka will be also deploy at any server and that server is called Broker. 
+- Different topics exist in kafka is :- 
+  1. Topic 0 
+  2. Topic 1
+
+  - Topic : Assume the Topic as a whatsapp group such as we have friends group, family group, class group, trip group, study group,etc. Kafka says that you will be sending different type of messages on it. Like we discussed about Ola so there may rider location, notifications, etc different type of message ko usne topic mai divide kar diya. 
+
+- In the Topic we have partitions. Partition indexing will be exist there, starting with 0. Partition are actual queue, where the message are stored. So the producer put the message in the partition. 
+- In Partition we have offsets. Offset are just like the small box or index of an array. Where we store the message.
+- The message m will be stored in the offset of thr partition. starting with 0 index. 
+
+### Introducing Producer-consumer Interactions :- 
+- So firstly the producer will push the message in the any of the topic to any of partition of any offset. How we selecting the topic we will see later. 
+- Lets say :- 
+   topic 0 --> Rider location related message
+   topic 1 --> notifications 
+- Lets say m1 and m2 are stored the topic 0. So consumer will firstly the consume the message m1. 
+
+### Consumer Groups and How consumer actually consumes messages. 
+Structure :- 
+ - Producer
+ - Broker : topic0 -> patition(0,1,2,3) -> Offset(0,1,2,3)
+ - Consumer Group : Consumer1 , Consumer2 
+
+- No consumer can exist without a consumer group. In the consumer group we have only one consumer for now. 
+- Producer will push the message in the partition. And consumer wants to read this partition, then for this kafka server do Auto-Balancing. So if we have one partion and one consumer only then kafka server we make sure that consumer will able to listen that partition. 
+ - So if we have one more partition then the auto balancing will make sure that cosumer1 will listen both partotion we have. Similarly if one more partition then consume1 will listen that too. 
+
+- If we intoduced one more consumer lets say consumer2 then what happend now which consumer will listen which partition? -> So usme kuchh partion ko consumer1 and kuchh ko consumer 2 listen karega. If the partition are even then equall no of partition will given to both two consumer we have. 
+- If have one more(odd) partition then any one can listen the last partition we introduced. 
+
+- So Auto balancing try to distribute the partition into evenly so no consumer have any type of load. 
+
+- If we have only one partition and have two consumer then what will be happen? So its allocate to any one consumer, jo pahle se hoga/aayega usko milega. Lets suppose consumer1 pahle aaya tha aur wo partition ko sun raha tha, Now if consumer2 come and ask to Broker about the partition if have then consumer is ready to listen.
+ - Broker will never allocate two consumer to same partition 
+
+Note :- If number of partition are less then number of consumers, some consumers will remain idle. So 1 consumer can consume many partition but 1 partition can be consumed by only one consumer. 
+
+### More than one consumer group
+Structure :- 
+ - Producer
+ - Broker : topic0 -> patition(0,) -> Offset(0,1,2,3)
+ - Consumer Group1 : Consumer1 , Consumer2
+ - Consumer Group2: Consumer1 , Consumer2
+
+- Now after introducing new consumer group we are trying to do Auto- Balancing. Both consumer group have the two-two consumer now. 
+- So if has one partition in the broker then it simply assign any of the consumer of consumer group1 and consumer group2.
+ -> So ek partition ko ek he consumer sun sakta hai from consumer group. So different consumer can listen the same partition in the same different consumer group. 
+- If one more partition then it will assign two the both groups -> jo idle hai abhi. 
+
+Note:- Jaise hamane abhi dekha tha ki kaise ek group mai Auto balancing kaam kar raha tha waise karega laki ab dono group mai karega. -> Many of the Interview problem's cpme through this concept. 
+
+Why Kafka does all this? Why consumer grups? why not same partition ko same gruop ke two consumer can listen? Why not we take just queue and we put request there and consumer take it from there?
+- Consumer Group concept is fairly new in kafka.
+- Messaging queues serve 2 purpose : 
+  1. Queue (FIFO) : act like queue we have studied
+  2. act like pub/sub model

@@ -191,3 +191,25 @@ Structure :-
   - The work of zookeeper is only this in kafka, we will be learning more about the zookeeper in future. 
 
 ### Clusters:-
+Structure :
+ Broker: Broker1: Topic0-> Partition1 and Topic2, Broker2: Topic0-> Parttion2 and Topic2 , Broker3:Topic0-> Parttion3 and Topic2
+
+- What will happen if kafka server got down? What happen to the data/operation? 
+- The group of brokers is called clusters-> We have learnt about the database scaling(sharding), cluster is similar to that it just deploy the multiple server of kafka. 
+- Kafka is service, to deploy we use multiple servers, which we called the brokers. So to kafka service is deloy to multiple server.  In case if any server us down then we can do data replication. 
+- Just like when we talk about the DB partitions, if one failed then data cannot be loss other DB should we have. 
+
+How message replication is done? 
+- lets we have we have the different parttion i.e partition1, partition2 and partition3 this all lie on the different Broker i.e Broker1, Broker2 and Broker3 repectively in the topic0 of all. -> Tino Partition lie on the same topic but deployed at different Broker because load disreibute rahe. 
+- Now too if the Broker one failed then we loose the partition1.
+
+- In DB we do sharding for the partition and master-slave for the replication. Here we Leader- Follower architecture. In this Original partition(Queue) will be Leader and Duplicate partition(queue) is follower. So in this we make follower in the other Broker so we donot loose the data of the partition(queue). 
+
+Summary :- 
+1. We have to put different partition on the Broker in topic0. So we put the different partition on the different Broker we have so the load is managed. 
+2. So if any of the Broker down then we loose the data that partition So for that we do data replicated which we call thed leader-follower Architecture. 
+
+How Read Write Operation done? 
+- Leader is responsible for both Read and Wtite Operation. And Follower will just listen the leader. When the leader added some message to it then follower also add the message to it. 
+
+- So Earlier we have the Zookeeper service now we have the kcraft service it is better then the Zookeeper. 

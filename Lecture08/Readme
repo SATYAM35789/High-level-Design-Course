@@ -159,3 +159,35 @@ Why Kafka does all this? Why consumer grups? why not same partition ko same gruo
 - Messaging queues serve 2 purpose : 
   1. Queue (FIFO) : act like queue we have studied
   2. act like pub/sub model
+
+### First Model: Consumer-Producer
+- Earlier the concept of the messaging queue is like  we will have the producer, queue and consumer, in this concept produceris responsible normally push the operations and consumer pull the operation. So in this we will have the one producer and one consumer corresponding.
+
+### Second Model : Pub/sub 
+- After this we got the pub/sub Model (Publisher/subscriber model), this model says that we have publisher at the place of producer, queue( Broadcasting type of queue) and subscriber(at the place consumer). We may have the multiple subscriber can listen the queue. In this we have 1 producer and many consumer.
+ - Real world example: Lets suppose you have youtube chennal and upload a video and you want that the notifications of new should go to all user who followed you. 
+
+- kafka is invent by the LinkedIn. So we have gone through all the two model we have discussed above,  so Kafka has implemented the first purpose of the messaging queue using only one consumer group it is applicable earlier.
+ - So kafka want to integrate the pub-sub model, so we cannot do when we have single consumer group because we donot allow multiple conumer to listen single partition. So introduced consumer group concept. Using the Consumer group concept it works as pub-sub model and using only one consumer group kafka work as normal producer-consumer ke tarh kaam karta hai. 
+
+### Zookeper :- 
+Structure :- 
+ - Producer
+ - Broker : topic0 -> patition(0) -> Offset(0,1,2,3)
+ - Consumer Group1 : Consumer1 , Consumer2 
+ - Zookeeper 
+
+ Zookeeper: Zookeeper is a service and it is exist indepenendantly beofore the kafka. Kafka just use the zookeeper for some purpose. 
+ - Lets say we have one partition and one group having two consumer i.e consumer1 and consumer2. Consumer1 one is listening the partion and consumer2 remain ideal. Zookeeper store all this information in it. 
+  like:-
+      Consumer group:1
+      Consumer : 1
+      Topic : 0
+      Partition : 0 
+      Offset : 0 
+    
+  - All the info of the messaging queue hierarchy is liestening is stored here which topic, which gropup, which partition and which offset,etc jo currently is being listened is stored hare. 
+  - It store the information because if the any of the consumer go down then other consumer if exist that will listen it will be done by the broker itself. So how the new assigned consumer will know that from it has to start reading the operation. For this we have the zookeeper. 
+  - The work of zookeeper is only this in kafka, we will be learning more about the zookeeper in future. 
+
+### Clusters:-
